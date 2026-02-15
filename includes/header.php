@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community Portal</title>
     <link rel="stylesheet" href="header.css">
+    <link rel="stylesheet" href="reports.css">
 </head>
 <body>
 
@@ -23,4 +24,5 @@
         </div>
 </nav>
 </body>
+
 </html>
