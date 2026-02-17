@@ -1,4 +1,4 @@
-<?php //note: styles tpo be transferred on css
+<?php //note: styles tpo be transferred sa css
 include "includes/member_header.php";
 session_start(); // alternate of a database, a memory. !! --> CHANGE TO DATABASE
 
@@ -171,3 +171,4 @@ if (isset($_GET['delete_id']))
 <?php 
 include "includes/member_footer.php"; 
 ?>
+
