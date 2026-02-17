@@ -1,6 +1,39 @@
-<?php 
+<?php //note: styles tpo be transferred on css
 include "includes/member_header.php";
+session_start(); // alternate of a database, a memory. !! --> CHANGE TO DATABASE
 
+if (isset($_POST['btn_save'])) //_POST ->> looks for the name attribute
+{ // isset ->> to check if its declared and is not null
+    $new_report = [
+        "name"    => $_POST['txt_name'],
+        "title"   => $_POST['txt_title'],
+        "tag"     => $_POST['txt_tag'],
+        "content" => $_POST['txt_content'],
+        "date"    => date("F j, Y"), // generates  date
+        "status"  => "Pending"
+    ];
+
+    // new_reports are being stored to the end of the empty list
+    $_SESSION['user_reports'][] = $new_report;
+
+    // header ->> sends a raw http header to the browser
+    // _SERVER['PHP_SELF'] ->> var that holds the filename
+    header("Location: " . $_SERVER['PHP_SELF']); 
+    exit(); // forcing the page to reload
+}
+
+if (isset($_GET['delete_id'])) 
+{
+    $id = $_GET['delete_id'];
+    if (isset($_SESSION['user_reports'][$id])) 
+    {
+        unset($_SESSION['user_reports'][$id]); 
+        $_SESSION['user_reports'] = array_values($_SESSION['user_reports']); 
+    }
+    
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -12,7 +45,8 @@ include "includes/member_header.php";
         <link rel="stylesheet" href="reports.css">
     </head>
     <body>
-        <div class="content-wrapper"> <!--details are not final. Informations to be updated-->
+        
+        <div class="content-wrapper"> 
             <div class="container">    
                 <div class="page-header">
                     <div class="header-content">
@@ -21,11 +55,66 @@ include "includes/member_header.php";
                     </div>
                         <p class="subtitle">Submit your concerns and track their resolution</p>
                 </div>
-                    <button class="btn-submit" onclick="alert('Form opening...')">+ Submit New Report</button> <!--SUBMIT BUTTON HERE -to be improved-->
+                    <!--SUBMIT NEW REPORT BUTTON-->
+                    <?php if (!isset($_GET['show_form'])): //_GET ->> if the html has this specific special tag "?show_form=true" it hides the button once clicked and it shows the input fields ?> 
+                        <a href="?show_form=true" class="btn-submit">+ Submit New Report</a>
+                    <?php endif; ?>
             </div>
             
+            <!--WHEN SUBMIT NEW REPORT BUTTON IS CLICKED -->
+            <?php if (isset($_GET['show_form'])): ?> 
+                <div class="report-card">
+                    <h2>Submit New Report</h2>
+                    <form method="POST" action="">
+                        <select name="txt_tag" style="width:100%; margin-bottom:10px; padding:8px;">
+                            <option value="Infrastructure">Infrastructure</option>
+                            <option value="Waste Management">Waste Management</option>
+                            <option value="Safety">Safety</option>
+                        </select>
+                        <input type="text" name="txt_name" placeholder="Full Name" required style="width:100%; margin-bottom:10px; padding:8px;">
+                        <input type="text" name="txt_title" placeholder="What is the issue?" required style="width:100%; margin-bottom:10px; padding:8px;">
+                        <textarea name="txt_content" placeholder="Provide details..." required style="width:100%; margin-bottom:10px; padding:8px; height:100px;"></textarea>
+                        <button type="submit" name="btn_save" class="btn-submit">Submit Now</button>
+                        <a href="?" style="margin-left:10px; color:blue;">Back</a>
+                    </form>
+                </div>
+            <?php endif; ?>
+
             <main class="report-list">
-                <!--ARTICLE REPORT CARD #1-->
+                <!--SAMPLE ARTICLE REPORT CARD UI STRUCTURE -->
+                <?php 
+                    if (isset($_SESSION['user_reports'])) 
+                    {
+                        $fresh_data = array_reverse($_SESSION['user_reports'], true);
+                    
+                        foreach ($_SESSION['user_reports'] as $key => $report) //MODIFIED. ORIGINAL CODE: foreach ($fresh_data as $report) for every fresh_data it repeats the html codes below 
+                        {
+                    ?>
+                        <article class="report-card">
+                            <div class="badge-container">
+                                <span class="badge status-pending"><?php echo $report['status']; ?></span>
+                                <span class="badge tag"><?php echo $report['tag']; ?></span>
+                            </div>
+
+                            <a href="?delete_id=<?php echo $key; ?>" onclick="return confirm('Remove this test report?')" style="float: right; color: red; text-decoration: none; font-weight: bold;">&times; Remove</a>
+
+                            <h2>
+                                <?php echo htmlspecialchars($report['title']); //htmlspecialchars ->> all displayed in plain text ?>
+                            </h2> 
+
+                            <p class="report-text"><?php echo htmlspecialchars($report['content']); ?></p>
+                            <div class="author-meta">Submitted by <?php echo htmlspecialchars($report['name']); ?> on <?php echo $report['date']; ?></div>
+                            
+                            <section class="admin-reply">
+                                <p><em>Awaiting administrative review...</em></p>
+                            </section>
+                        </article>
+                    <?php 
+                        }
+                    } 
+                    ?>
+
+                <!--SAMPLE ARTICLE REPORT CARD FORMAT -->
                 <article class="report-card">
                     <div class="badge-container">
                         <span class="badge status-progress">In Progress</span> <!--status-->
@@ -40,12 +129,12 @@ include "includes/member_header.php";
                     <!--community admin response:-->
                     <section class="admin-reply">
                         <h3>Administrator Response</h3>
-                        <p>TThank you for reporting this concern. Our Electrical Maintenance Unit has coordinated with Angeles Electric Corporation (AEC) to inspect the street light. Replacement of the bulb and wiring repair is scheduled within 2–3 working days.</p>
+                        <p>Thank you for reporting this concern. Our Electrical Maintenance Unit has coordinated with Angeles Electric Corporation (AEC) to inspect the street light. Replacement of the bulb and wiring repair is scheduled within 2–3 working days.</p>
                         <time class="reply-date">Responded on January 26, 2026</time>
                     </section>
                 </article>
 
-                <!--ARTICLE REPORT CARD #2-->
+                <!--SAMPLE ARTICLE REPORT CARD FORMAT -->
                 <article class="report-card">
                     <div class="badge-container">
                         <span class="badge status-resolved">Resolved</span>
@@ -63,7 +152,7 @@ include "includes/member_header.php";
                     </section>
                 </article>
 
-                <!--ARTICLE REPORT CARD #3-->
+                <!--SAMPLE ARTICLE REPORT CARD FORMAT -->
                 <article class="report-card">
                     <div class="badge-container">
                         <span class="badge status-pending">Pending</span>
