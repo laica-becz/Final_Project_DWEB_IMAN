@@ -20,8 +20,11 @@
         </div>
         <div class="user-actions">
             <button class="btn-user"><i class="fa-solid fa-user"></i> User</button>
-            <button class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            <button class="btn-logout" onclick="window.location.href='../includes/logout.php'">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
         </div>
 </nav>
 </body>
 </html>
+
