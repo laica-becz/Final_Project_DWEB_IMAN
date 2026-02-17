@@ -1,87 +1,19 @@
 /* ── Footer ── */
 .footer {
-    background: #90bfde;
-    color: #1a1a2e;
+    background: #fff;
+    border-top: 2px solid #7b1c1c;
     margin-top: 40px;
-    padding: 30px 20px 0;
+    padding: 14px 20px;
 }
 
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 30px;
-    padding-bottom: 25px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-}
-
-/* Brand */
-.footer-brand h3 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #1a237e;
-    margin-bottom: 6px;
-}
-
-.footer-brand p {
-    color: #2c3e6b;
-    font-size: 0.85rem;
-    line-height: 1.6;
-}
-
-/* Quick Links */
-.footer-links h4,
-.footer-contact h4 {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #1a237e;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-}
-
-.footer-links {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.footer-links a {
-    color: #2c3e6b;
-    text-decoration: none;
-    font-size: 0.875rem;
-    transition: color 0.2s;
-}
-
-.footer-links a:hover {
-    color: #1565c0;
-}
-
-/* Contact */
-.footer-contact {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.footer-contact p {
-    color: #2c3e6b;
-    font-size: 0.875rem;
-    line-height: 1.7;
-}
-
-/* Bottom bar */
 .footer-bottom {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 14px 0;
     text-align: center;
 }
 
 .footer-bottom p {
-    color: #2c3e6b;
+    color: #7b1c1c;
     font-size: 0.8rem;
+    letter-spacing: 0.03em;
 }
 
 /* Responsive */
