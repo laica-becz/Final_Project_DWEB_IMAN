@@ -1,5 +1,6 @@
 <?php
 include "header.php";
+
 // Data arrays for easy maintenance
 $collection_schedule = [
     ['zone' => 'Zone A (North District)', 'type' => 'Biodegradable', 'days' => 'Monday & Thursday', 'time' => '6:00 AM - 10:00 AM', 'class' => 'bio'],
@@ -10,6 +11,7 @@ $collection_schedule = [
     ['zone' => 'Zone C (East District)', 'type' => 'Non-Biodegradable', 'days' => 'Wednesday & Saturday', 'time' => '2:00 PM - 5:00 PM', 'class' => 'non-bio'],
 ];
 
+// Array for waste segregation guidelines
 $guidelines = [
     [
         'title' => 'Biodegradable',
@@ -54,10 +56,12 @@ $guidelines = [
         <div class="schedule-grid">
             <?php foreach ($collection_schedule as $item): ?>
             <div class="schedule-item">
+                
                 <div class="schedule-header">
                     <strong><?php echo $item['zone']; ?></strong>
                     <span class="badge <?php echo $item['class']; ?>"><?php echo $item['type']; ?></span>
                 </div>
+                
                 <div class="schedule-details">
                     <?php echo $item['days']; ?> • <?php echo $item['time']; ?>
                 </div>
@@ -72,11 +76,13 @@ $guidelines = [
             <?php foreach ($guidelines as $guide): ?>
             <div class="guide-card <?php echo $guide['color']; ?>">
                 <div class="guide-header">
+                    
                     <div class="icon-circle">
                         <i class="fa-solid fa-trash-can"></i>
                     </div>
                     <h3><?php echo $guide['title']; ?></h3>
                 </div>
+                
                 <div class="guide-content">
                     <p class="bag-type"><strong><?php echo $guide['bag']; ?></strong></p>
                     <ul>
