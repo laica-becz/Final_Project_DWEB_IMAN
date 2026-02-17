@@ -1,5 +1,5 @@
 <?php
-include "header.php";
+include "includes/header.php";
 
 // Data arrays for easy maintenance
 $collection_schedule = [
@@ -101,5 +101,8 @@ $guidelines = [
     </section>
 </div>
 
+<?php include "includes/footer.php"; ?>
+
 </body>
 </html>
+
