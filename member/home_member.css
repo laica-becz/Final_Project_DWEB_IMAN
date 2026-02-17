@@ -1,0 +1,125 @@
+/* 1. Base Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9fafb; /* Light grey background */
+    color: #1f2937;
+    line-height: 1.5;
+    padding: 20px;
+}
+
+/* 2. Layout Container */
+.container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 40px auto;
+}
+
+/* 3. Announcements Header Section */
+.announcements-header {
+    margin-bottom: 40px;
+}
+
+.title-wrapper {
+    display: flex;
+    align-items: center; /* Aligns megaphone and text vertically */
+    gap: 15px;           /* Space between icon and "Community Announcements" */
+    margin-bottom: 8px;
+}
+
+/* The Tilted Megaphone Icon */
+.main-megaphone {
+    color: #6366f1;
+    font-size: 2.8rem;   /* Large size as requested */
+    transform: rotate(-15deg); /* Tilted look */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.announcements-header h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.subtitle {
+    color: #6b7280;
+    font-size: 1rem;
+    margin-left: 3px; /* Subtle alignment with the text above */
+}
+
+/* 4. Card Styling */
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid #f0f0f0;
+    margin-bottom: 25px; /* Creates space between cards */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Priority Badges */
+.badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.high { background: #fee2e2; color: #dc2626; }   /* Red for High Priority */
+.normal { background: #e0f2fe; color: #0284c7; } /* Blue for Normal */
+
+/* Card Content */
+.card h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #111827;
+}
+
+.card p {
+    color: #4b5563;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* 5. Balanced Date Row (Fixed Alignment) */
+.date-row {
+    display: flex;
+    align-items: center; /* Centers text perfectly with the icon */
+    gap: 8px;           /* Space between calendar and date text */
+    color: #9ca3af;
+    font-size: 0.9rem;
+}
+
+.date-row .material-symbols-outlined {
+    font-size: 1.2rem;   /* Slightly larger calendar icon */
+    display: flex;
+    align-items: center;
+}
+
+/* Responsive adjust for mobile */
+@media (max-width: 640px) {
+    .main-header { padding: 15px 20px; }
+    .main-megaphone { font-size: 2.2rem; }
+    .announcements-header h1 { font-size: 1.5rem; }
+    .card { padding: 20px; }
+}
