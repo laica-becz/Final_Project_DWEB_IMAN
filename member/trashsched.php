@@ -1,5 +1,5 @@
 <?php
-include "includes/header.php";
+include "../includes/member_header.php";
 
 // Data arrays for easy maintenance
 $collection_schedule = [
@@ -40,7 +40,7 @@ $guidelines = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trash Collection Schedule</title>
-    <link rel="stylesheet" href="member/trashsched.css">
+    <link rel="stylesheet" href="../member/trashsched.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -101,9 +101,7 @@ $guidelines = [
     </section>
 </div>
 
-<?php include "includes/footer.php"; ?>
+<?php include "../includes/member_footer.php"; ?>
 
 </body>
 </html>
-
-
