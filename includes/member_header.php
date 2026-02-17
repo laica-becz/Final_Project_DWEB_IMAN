@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community Portal</title>
-    <link rel="stylesheet" href="header.css">
-   <!--- <link rel="stylesheet" href="reports.css"> --->
+    <link rel="stylesheet" href="includes/header.css">
 </head>
 <body>
-
     <nav class="navbar">
         <div class="logo">Community Portal</div>
         <div class="nav-links">
@@ -20,11 +18,6 @@
         </div>
         <div class="user-actions">
             <button class="btn-user"><i class="fa-solid fa-user"></i> User</button>
-            <button class="btn-logout" onclick="window.location.href='../includes/logout.php'">
-                <i class="fa-solid fa-right-from-bracket"></i> Logout
-            </button>
+            <button class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
         </div>
-</nav>
-</body>
-</html>
-
+    </nav>
