@@ -1,3 +1,11 @@
+<?php 
+session_start();
+if (isset($_SESSION['admin_id'])){
+    header('Location: admin_portal.php');
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +33,6 @@
 
             <!-- Administrator Card -->
             <div class="card admin" onclick="openLoginModal()">
-                <a href="admin_portal.php"></a>
                 <div class="icon-circle">
                     <img src="img/admin.png" alt="Community Icon" class="card-icon">
                 </div>
@@ -38,6 +45,9 @@
     <!-- Login Modal -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
+            <?php if (isset($_GET['error']) && $_GET['error'] === 'invalid'): ?>
+                <div class="error-message">Invalid username or password.</div>
+            <?php endif; ?>
             <button class="close-btn" onclick="closeLoginModal()">&times;</button>
             <div class="modal-header">
                 <h2>Administrator Login</h2>
@@ -58,6 +68,9 @@
     </div>
 
     <script>
+        <?php if (isset($_GET['error'])): ?>
+            window.onload = function() {openLoginModal(); };
+        <?php endif; ?>
         function openLoginModal() {
             document.getElementById('loginModal').classList.add('active');
         }
@@ -73,13 +86,6 @@
                 closeLoginModal();
             }
         }
-
-        // For now, prevent form submission (remove this when adding PHP)
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Login functionality will be added with PHP. For now, this is just the front-end.');
-            // When you add PHP, remove the e.preventDefault() and alert
-        });
     </script>
 </body>
 </html>
