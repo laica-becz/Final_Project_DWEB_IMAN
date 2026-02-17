@@ -10,19 +10,14 @@ body {
     color: #334155;
 }
 
-/* Navbar */
 .navbar {
     background: white;
-    padding: 1rem 2rem;
+    padding: 1rem 3rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-
-    /* recently added to fix reports.php */
     position: fixed;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 50px; 
     z-index: 1000;
