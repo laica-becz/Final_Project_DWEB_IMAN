@@ -23,7 +23,7 @@ if (isset($_SESSION['admin_id'])){
 
         <div class="role-cards">
             <!-- Community Member Card -->
-            <a href="member_portal.php" class="card member">
+            <a href="member/member_home.php" class="card member">
                 <div class="icon-circle">
                     <img src="img/member.png" alt="Community Icon" class="card-icon">
                 </div>
@@ -53,7 +53,7 @@ if (isset($_SESSION['admin_id'])){
                 <h2>Administrator Login</h2>
                 <p>Please enter your credentials</p>
             </div>
-            <form id="loginForm" action="admin-login.php" method="POST">
+            <form id="loginForm" action="admin/admin_home.php" method="POST">
                 <div class="form-group">
                     <label for="username">Username</label>
                     <input type="text" id="username" name="username" required>
