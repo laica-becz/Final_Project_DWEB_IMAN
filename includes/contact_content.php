@@ -152,5 +152,7 @@ $departments = [
             </div>
         </div>
     </main>
+    <!-- PHP: Show last updated date so residents know the info is current -->
+    <p class="last-updated">Last updated: <?php echo date('F j, Y'); ?></p>
 </body>
 </html>
