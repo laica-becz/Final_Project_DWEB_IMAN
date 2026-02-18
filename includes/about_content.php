@@ -11,7 +11,7 @@
 
     <!-- Page Header -->
     <section class="page-header">
-        <h1>About Our Community</h1>
+        <h1>About Our Community Portal</h1>
         <p>Learn more about our community management system and guidelines</p>
     </section>
 
