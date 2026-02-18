@@ -1,5 +1,5 @@
 <?php //note: styles tpo be transferred sa css
-include "includes/member_header.php";
+include "../includes/member_header.php";
 session_start(); // alternate of a database, a memory. !! --> CHANGE TO DATABASE
 
 if (isset($_POST['btn_save'])) //_POST ->> looks for the name attribute
@@ -42,7 +42,7 @@ if (isset($_GET['delete_id']))
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Reports & Concerns - Community Portal</title>
-        <link rel="stylesheet" href="reports.css">
+        <link rel="stylesheet" href="../member/member_reports.css">
     </head>
     <body>
         
@@ -169,6 +169,5 @@ if (isset($_GET['delete_id']))
 </html>
 
 <?php 
-include "includes/member_footer.php"; 
+include "../includes/member_footer.php"; 
 ?>
-
