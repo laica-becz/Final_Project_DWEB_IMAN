@@ -11,17 +11,24 @@
     --black-bg: #f1f5f9;
 }
 
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg-color);
     color: var(--text-main);
-    margin: 30px;
-    padding: 40px 20px;
+    line-height: 1.5;
+    padding-top: 30px; /* MODIFIED */
 }
 
 .container {
-    max-width: 900px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 1000px;
+    margin: 40px auto; 
 }
 
 header h1 {
