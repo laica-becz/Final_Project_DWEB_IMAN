@@ -17,7 +17,6 @@
     min-height: 100vh;
 }
 
-
 .page-header {
     display: flex;
     justify-content: space-between;
@@ -62,6 +61,34 @@ h1 {
 
 .btn-submit:hover {
     opacity: 0.9;
+}
+
+/* RECENTLY ADDED (REPORT SUBMISSION SECTION) */
+._tag,
+._name,
+._title {
+    width: 100%;
+    margin-bottom:10px;
+    padding:8px;
+}
+
+._content{
+    width:100%; 
+    margin-bottom:10px; 
+    padding:8px; 
+    height:100px;
+}
+
+.back-option{
+    margin-left:10px;
+    color:blue;
+}
+
+.remove-option{
+    float: right; 
+    color: red; 
+    text-decoration: none; 
+    font-weight: bold;
 }
 
 /*  ARTICLE REPORT CARDS or the article of concerns css */
