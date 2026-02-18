@@ -10,14 +10,14 @@ body {
     background-color: #f9fafb; /* Light grey background */
     color: #1f2937;
     line-height: 1.5;
-    padding: 20px;
+    padding-top: 20px; /* MODIFIED */
 }
 
 /* 2. Layout Container */
 .container {
     width: 100%;
     max-width: 1000px;
-    margin: 40px auto;
+    margin: 40px auto; 
 }
 
 /* 3. Announcements Header Section */
