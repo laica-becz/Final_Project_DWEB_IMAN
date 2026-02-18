@@ -11,6 +11,15 @@ body {
     padding: 60px 20px 40px 20px;
 }
 
+/* Last Updated */
+.last-updated {
+    text-align: center;
+    color: #999;
+    font-size: 0.8rem;
+    margin-top: 15px; 
+    margin-bottom: 10px;
+}
+
 /* Header Section */
 .page-header { margin-bottom: 30px; }
 .title-wrapper { display: flex; align-items: center; gap: 15px; }
@@ -87,4 +96,5 @@ body {
 
 @media (max-width: 768px) {
     .contact-grid, .usage-grid { grid-template-columns: 1fr; }
+
 }
