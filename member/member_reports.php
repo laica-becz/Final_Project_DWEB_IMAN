@@ -1,6 +1,6 @@
 <?php 
-include "includes/member_header.php";
-include "db_conn.php";
+include "../includes/member_header.php";
+include "../includes/db_conn.php";
 
 if (isset($_POST['btn_save'])) 
 { 
@@ -40,7 +40,7 @@ if (isset($_GET['delete_id']))
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Reports & Concerns - Community Portal</title>
-        <link rel="stylesheet" href="reports.css">
+        <link rel="stylesheet" href="../member/member_reports.css">
     </head>
     <body>
         
@@ -181,5 +181,5 @@ if (isset($_GET['delete_id']))
 </html>
 
 <?php 
-include "includes/member_footer.php"; 
+include "../includes/member_footer.php"; 
 ?>
