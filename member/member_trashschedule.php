@@ -39,9 +39,8 @@ $guidelines = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trash Collection Schedule</title>
-    <link rel="stylesheet" href="member/member_trashschedule.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Trash Collection Schedule - Community Portal</title>
+    <link rel="stylesheet" href="../member/member_trashschedule.css">
 </head>
 <body>
 
@@ -105,4 +104,3 @@ $guidelines = [
 
 </body>
 </html>
-
