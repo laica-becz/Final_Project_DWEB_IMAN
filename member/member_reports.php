@@ -1,38 +1,36 @@
-<?php //note: styles tpo be transferred sa css
-include "../includes/member_header.php";
-session_start(); // alternate of a database, a memory. !! --> CHANGE TO DATABASE
+<?php 
+include "includes/member_header.php";
+include "db_conn.php";
 
-if (isset($_POST['btn_save'])) //_POST ->> looks for the name attribute
-{ // isset ->> to check if its declared and is not null
-    $new_report = [
-        "name"    => $_POST['txt_name'],
-        "title"   => $_POST['txt_title'],
-        "tag"     => $_POST['txt_tag'],
-        "content" => $_POST['txt_content'],
-        "date"    => date("F j, Y"), // generates  date
-        "status"  => "Pending"
-    ];
+if (isset($_POST['btn_save'])) 
+{ 
+    $name = mysqli_real_escape_string($conn, $_POST['txt_name']);
+    $title = mysqli_real_escape_string($conn, $_POST['txt_title']);
+    $tag = mysqli_real_escape_string($conn, $_POST['txt_tag']);
+    $content = mysqli_real_escape_string($conn, $_POST['txt_content']);
 
-    // new_reports are being stored to the end of the empty list
-    $_SESSION['user_reports'][] = $new_report;
+    $sql = "INSERT INTO reports (report_name, report_title, report_tag, report_content) 
+            VALUES ('$name', '$title', '$tag', '$content')";
 
-    // header ->> sends a raw http header to the browser
-    // _SERVER['PHP_SELF'] ->> var that holds the filename
-    header("Location: " . $_SERVER['PHP_SELF']); 
-    exit(); // forcing the page to reload
+    if (mysqli_query($conn, $sql)) 
+    {
+        header("Location: " . $_SERVER['PHP_SELF']); 
+        exit();
+    } else {
+        echo "Error: " . mysqli_error($conn);
+    }
 }
 
 if (isset($_GET['delete_id'])) 
 {
-    $id = $_GET['delete_id'];
-    if (isset($_SESSION['user_reports'][$id])) 
-    {
-        unset($_SESSION['user_reports'][$id]); 
-        $_SESSION['user_reports'] = array_values($_SESSION['user_reports']); 
-    }
+    $id = mysqli_real_escape_string($conn, $_GET['delete_id']);
+    $sql = "DELETE FROM reports WHERE report_id = '$id'";
     
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit();
+    if (mysqli_query($conn, $sql)) 
+    {
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
+    }
 }
 ?>
 
@@ -42,7 +40,7 @@ if (isset($_GET['delete_id']))
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Reports & Concerns - Community Portal</title>
-        <link rel="stylesheet" href="../member/member_reports.css">
+        <link rel="stylesheet" href="reports.css">
     </head>
     <body>
         
@@ -66,48 +64,62 @@ if (isset($_GET['delete_id']))
                 <div class="report-card">
                     <h2>Submit New Report</h2>
                     <form method="POST" action="">
-                        <select name="txt_tag" style="width:100%; margin-bottom:10px; padding:8px;">
+                        <select name="txt_tag" class="_tag">
                             <option value="Infrastructure">Infrastructure</option>
                             <option value="Waste Management">Waste Management</option>
                             <option value="Safety">Safety</option>
                         </select>
-                        <input type="text" name="txt_name" placeholder="Full Name" required style="width:100%; margin-bottom:10px; padding:8px;">
-                        <input type="text" name="txt_title" placeholder="What is the issue?" required style="width:100%; margin-bottom:10px; padding:8px;">
-                        <textarea name="txt_content" placeholder="Provide details..." required style="width:100%; margin-bottom:10px; padding:8px; height:100px;"></textarea>
+                        <input type="text" name="txt_name" placeholder="Full Name" required class="_name">
+                        <input type="text" name="txt_title" placeholder="What is the issue?" required class="_title">
+                        <textarea name="txt_content" placeholder="Provide details..." required class="_content"></textarea>
                         <button type="submit" name="btn_save" class="btn-submit">Submit Now</button>
-                        <a href="?" style="margin-left:10px; color:blue;">Back</a>
+                        <a href="?" class="back-option">Back</a>
                     </form>
                 </div>
             <?php endif; ?>
 
             <main class="report-list">
-                <!--SAMPLE ARTICLE REPORT CARD UI STRUCTURE -->
+                <!--ARTICLE REPORT CARD FETCHING REAL-TIME DATA FROM MARIADB TABLE STRUCTURE -->
                 <?php 
-                    if (isset($_SESSION['user_reports'])) 
+                    $query = "SELECT * FROM reports ORDER BY report_submitted DESC";
+                    $result = mysqli_query($conn, $query);
+                    if (mysqli_num_rows($result) > 0)
                     {
-                        $fresh_data = array_reverse($_SESSION['user_reports'], true);
-                    
-                        foreach ($_SESSION['user_reports'] as $key => $report) //MODIFIED. ORIGINAL CODE: foreach ($fresh_data as $report) for every fresh_data it repeats the html codes below 
+                        while($report = mysqli_fetch_assoc($result)) //MODIFIED: for every row in database it repeats the html codes below 
                         {
                     ?>
                         <article class="report-card">
                             <div class="badge-container">
                                 <span class="badge status-pending"><?php echo $report['status']; ?></span>
-                                <span class="badge tag"><?php echo $report['tag']; ?></span>
+                                <span class="badge tag"><?php echo $report['report_tag']; ?></span>
                             </div>
 
-                            <a href="?delete_id=<?php echo $key; ?>" onclick="return confirm('Remove this test report?')" style="float: right; color: red; text-decoration: none; font-weight: bold;">&times; Remove</a>
+                            <a href="?delete_id=<?php echo $report['report_id']; ?>" onclick="return confirm('Remove this report?')" class="remove-option">&times; Remove</a>
 
                             <h2>
-                                <?php echo htmlspecialchars($report['title']); //htmlspecialchars ->> all displayed in plain text ?>
+                                <?php echo htmlspecialchars($report['report_title']); //htmlspecialchars ->> all displayed in plain text ?>
                             </h2> 
 
-                            <p class="report-text"><?php echo htmlspecialchars($report['content']); ?></p>
-                            <div class="author-meta">Submitted by <?php echo htmlspecialchars($report['name']); ?> on <?php echo $report['date']; ?></div>
+                            <p class="report-text">
+                                <?php echo htmlspecialchars($report['report_content']); ?>
+                            </p>
+
+                            <div class="author-meta">
+                                Submitted by <?php echo htmlspecialchars($report['report_name']); ?> on <?php echo date("F j, Y", strtotime($report['report_submitted'])); ?>
+                            </div>
                             
-                            <section class="admin-reply">
-                                <p><em>Awaiting administrative review...</em></p>
-                            </section>
+                            <?php if(!empty($report['admin_note'])): ?>
+                                <section class="admin-reply">
+                                    <h3>Administrator Response</h3>
+                                    <p><?php echo htmlspecialchars($report['admin_note']); ?></p>
+                                    <time class="reply-date">Responded on <?php echo date("F j, Y", strtotime($report['admin_resolved'])); ?></time>
+                                </section>
+                            <?php else: ?>
+                                <section class="admin-reply">
+                                    <p><em>Awaiting administrative review...</em></p>
+                                </section>
+                            <?php endif; ?>
+
                         </article>
                     <?php 
                         }
@@ -169,5 +181,5 @@ if (isset($_GET['delete_id']))
 </html>
 
 <?php 
-include "../includes/member_footer.php"; 
+include "includes/member_footer.php"; 
 ?>
