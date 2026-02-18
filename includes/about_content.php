@@ -31,7 +31,6 @@
         <h2>What This System Offers</h2>
         <div class="offers-grid">
 
-            <!-- For Community Members -->
             <div class="offer-card">
                 <h3>For Community Members</h3>
                 <ul>
@@ -43,7 +42,6 @@
                 </ul>
             </div>
 
-            <!-- For Administrators -->
             <div class="offer-card admin">
                 <h3>For Administrators</h3>
                 <ul>
@@ -64,7 +62,6 @@
 
         <div class="guidelines-content">
 
-            <!-- General Guidelines -->
             <div class="guideline-subsection">
                 <h3>General Guidelines</h3>
 
@@ -125,7 +122,6 @@
             </div>
 
             <!-- Response Times -->
-            <!-- PHP: Pulled from database so admins can update these times without touching code -->
             <div class="response-times">
                 <h3>Response Times</h3>
                 <ul>
@@ -138,7 +134,7 @@
         </div>
     </section>
 
-    <!-- PHP: Show last updated date so residents know the info is current -->
+    <!-- Show last updated date so residents know the info is current -->
     <p class="last-updated">Last updated: <?php echo date('F j, Y'); ?></p>
 </div>
 </body>
