@@ -1,3 +1,8 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
 :root {
     --primary-purple: #9333ea;
     --bg-gray: #f8fafc;
@@ -11,8 +16,6 @@
 
 .content-wrapper {
     padding-top: 100px; 
-    padding-left: 20px;
-    padding-right: 20px;
     background-color: var(--bg-gray);
     min-height: 100vh;
 }
@@ -26,7 +29,9 @@
 
 .container {
     max-width: 1000px; 
-    margin: 0 auto;    
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
 }
 
 .title-row {
