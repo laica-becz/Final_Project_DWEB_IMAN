@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Our Community - Community Management System</title>
-    <link rel="stylesheet" href="about.css">
+    <title>About Us - Community Management System</title>
+    <link rel="stylesheet" href="../member/about.css">
 </head>
 <body>
 <div class="container">
 
-    <!-- Page Header -->
-    <section class="page-header">
-        <h1>About Our Community Portal</h1>
+    <!-- Header -->
+     <div class="about-header">
+        <h1><i class="fas fa-info-circle"></i> About our Community</h1>
         <p>Learn more about our community management system and guidelines</p>
-    </section>
+    </div>
 
     <!-- Mission Section -->
     <section class="mission-section">
@@ -95,7 +95,6 @@
 
                 <div class="usage-cards">
                     <div class="usage-card pink">
-                        <div class="usage-card-icon">📢</div>
                         <div class="usage-card-content">
                             <h4>Home Page</h4>
                             <p>Check regularly for announcements about community events, updates, and important notices.</p>
@@ -103,7 +102,6 @@
                     </div>
 
                     <div class="usage-card green">
-                        <div class="usage-card-icon">🗑️</div>
                         <div class="usage-card-content">
                             <h4>Trash Schedule</h4>
                             <p>Review collection schedules and learn proper waste segregation to help keep our community clean.</p>
@@ -111,7 +109,6 @@
                     </div>
 
                     <div class="usage-card purple">
-                        <div class="usage-card-icon">📝</div>
                         <div class="usage-card-content">
                             <h4>Reports & Concerns</h4>
                             <p>Submit non-urgent community issues, suggestions, or concerns. Administrators will review and respond.</p>
@@ -119,7 +116,6 @@
                     </div>
 
                     <div class="usage-card orange">
-                        <div class="usage-card-icon">📞</div>
                         <div class="usage-card-content">
                             <h4>Contact Page</h4>
                             <p>Use this for urgent matters that require immediate attention from municipal authorities.</p>
@@ -144,7 +140,6 @@
 
     <!-- PHP: Show last updated date so residents know the info is current -->
     <p class="last-updated">Last updated: <?php echo date('F j, Y'); ?></p>
-
 </div>
 </body>
 </html>
