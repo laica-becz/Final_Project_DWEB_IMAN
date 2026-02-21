@@ -28,7 +28,7 @@ if (isset($_POST['btn_save']))
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Reports & Concerns - Community Portal</title>
-        <link rel="stylesheet" href="../member/member_reports.css">
+        <link rel="stylesheet" href="../css/member_reports.css">
     </head>
     <body>
         
@@ -169,3 +169,4 @@ if (isset($_POST['btn_save']))
 <?php 
 include "../includes/member_footer.php"; 
 ?>
+
