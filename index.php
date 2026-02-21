@@ -17,7 +17,7 @@ if (isset($_SESSION['admin_id'])){
 <body>
     <div class="container">
         <div class="header">
-            <h1>Community Management System</h1>
+            <h1>Community Portal</h1>
             <p>Select your role to continue</p>
         </div>
 
@@ -89,3 +89,4 @@ if (isset($_SESSION['admin_id'])){
     </script>
 </body>
 </html>
+
