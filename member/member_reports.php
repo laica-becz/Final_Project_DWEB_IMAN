@@ -20,18 +20,6 @@ if (isset($_POST['btn_save']))
         echo "Error: " . mysqli_error($conn);
     }
 }
-
-if (isset($_GET['delete_id'])) 
-{
-    $id = mysqli_real_escape_string($conn, $_GET['delete_id']);
-    $sql = "DELETE FROM reports WHERE report_id = '$id'";
-    
-    if (mysqli_query($conn, $sql)) 
-    {
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -63,7 +51,7 @@ if (isset($_GET['delete_id']))
             <?php if (isset($_GET['show_form'])): ?> 
                 <div class="report-card">
                     <h2>Submit New Report</h2>
-                    <form method="POST" action="">
+                    <form method="POST" action="" onsubmit="return confirm('Are you sure you want to submit this concern? Once submitted, it cannot be edited or deleted.');"> <!--inline javascript for confirmation instead of allowing the user to remove their entry-->
                         <select name="txt_tag" class="_tag">
                             <option value="Infrastructure">Infrastructure</option>
                             <option value="Waste Management">Waste Management</option>
@@ -93,8 +81,6 @@ if (isset($_GET['delete_id']))
                                 <span class="badge status-pending"><?php echo $report['status']; ?></span>
                                 <span class="badge tag"><?php echo $report['report_tag']; ?></span>
                             </div>
-
-                            <a href="?delete_id=<?php echo $report['report_id']; ?>" onclick="return confirm('Remove this report?')" class="remove-option">&times; Remove</a>
 
                             <h2>
                                 <?php echo htmlspecialchars($report['report_title']); //htmlspecialchars ->> all displayed in plain text ?>
