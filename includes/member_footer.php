@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../includes/footer.css">
+    <link rel="stylesheet" href="../css/footer.css">
 </head>
 <body>
     
@@ -14,3 +14,4 @@
         <p>Copyright &copy; <?php echo date('Y'); ?> Community Portal &bull; All Rights Reserved</p>
     </div>
 </footer>
+
