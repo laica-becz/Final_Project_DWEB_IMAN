@@ -40,7 +40,7 @@ $guidelines = [
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trash Collection Schedule - Community Portal</title>
-    <link rel="stylesheet" href="../member/member_trashschedule.css">
+    <link rel="stylesheet" href="../css/member_trashschedule.css">
 </head>
 <body>
 
@@ -104,3 +104,4 @@ $guidelines = [
 
 </body>
 </html>
+
