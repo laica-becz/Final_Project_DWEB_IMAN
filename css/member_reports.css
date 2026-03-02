@@ -141,7 +141,7 @@ h1 {
     margin-bottom: 20px;
 }
 
-/*  ADMIN OR COMMUNITY ADMIN RESPONSE */
+/*=======================ADMIN PAGE CSS=======================*/
 .admin-reply {
     background-color: var(--reply-bg);
     border-left: 4px solid var(--link-blue);
@@ -165,4 +165,52 @@ h1 {
     font-size: 0.75rem;
     color: var(--link-blue);
     font-weight: 500;
+}
+
+.btn-respond-trigger { 
+    background-color: #2b63f1; color: white; padding: 10px 20px; 
+    border-radius: 10px; border: none; cursor: pointer; 
+    display: inline-flex; align-items: center; gap: 8px; 
+    font-weight: 500; text-decoration: none; font-size: 14px;
+}
+
+.response-container { 
+    margin-top: 15px; 
+    border-top: 1px solid #eee; 
+    padding-top: 15px;
+}
+
+.response-textarea { 
+    width: 100%; 
+    border: 1px solid #e0e0e0; 
+    border-radius: 8px; 
+    padding: 12px; 
+    margin-bottom: 10px; 
+    font-family: inherit; 
+    resize: none; 
+}
+
+.admin-actions { 
+    display: flex; 
+    gap: 8px; 
+}
+
+.btn-send { 
+    background-color: #2b63f1; 
+    color: white; 
+    border: none; 
+    padding: 8px 16px; 
+    border-radius: 6px; 
+    cursor: pointer; 
+}
+
+.btn-cancel { 
+    background-color: #f0f0f0; 
+    color: #666; 
+    border: none; 
+    padding: 8px 16px; 
+    border-radius: 6px; 
+    cursor: pointer; 
+    text-decoration: none; 
+    font-size: 13px; 
 }
