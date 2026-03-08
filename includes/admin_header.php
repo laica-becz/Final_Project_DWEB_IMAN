@@ -12,7 +12,7 @@
     <nav class="navbar">
         <div class="logo">Community Portal</div>
         <div class="nav-links">
-            <a href="admin_portal.php" class="nav-item active"><i class="fa-solid fa-house"></i> Home</a>
+            <a href="admin_home.php" class="nav-item"><i class="fa-solid fa-house"></i> Home</a>
             <a href="about.php" class="nav-item"><i class="fa-solid fa-circle-info"></i> About</a>
             <a href="admin_trashSched.php" class="nav-item"><i class="fa-solid fa-calendar-days"></i> Trash Schedule</a>
             <a href="admin_reports.php" class="nav-item"><i class="fa-solid fa-comment-dots"></i> Reports</a>
