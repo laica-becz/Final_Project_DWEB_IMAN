@@ -123,3 +123,139 @@ body {
     .announcements-header h1 { font-size: 1.5rem; }
     .card { padding: 20px; }
 }
+
+/* ADDED */
+/* Styling for the Action Buttons */
+.btn-add-new:hover {
+    background-color: #4338ca !important;
+}
+
+/* Form Styles */
+.card form label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+/* Ensure cards with icons look right */
+.card {
+    position: relative;
+    transition: box-shadow 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+/* admin_styles.css */
+
+/* The Add/Edit Form Container */
+.admin-form-card {
+    border: 2px solid #4f46e5; 
+    padding: 30px; 
+    border-radius: 12px; 
+    margin-bottom: 25px;
+    background-color: #fff;
+}
+
+.admin-form-group {
+    margin-bottom: 15px;
+}
+
+.admin-form-group label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.admin-input {
+    width: 100%; 
+    padding: 10px; 
+    border-radius: 8px; 
+    border: 1px solid #e2e8f0;
+    font-family: inherit;
+}
+
+/* Action Buttons */
+.btn-group {
+    display: flex; 
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-save {
+    background-color: #10b981; 
+    color: white; 
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-weight: 600;
+}
+
+.btn-cancel {
+    text-decoration: none; 
+    padding: 10px 20px; 
+    color: #4b5563; 
+    background-color: #e5e7eb; 
+    border-radius: 8px;
+}
+
+/* Edit/Delete Icon Positioning */
+.card-actions {
+    position: absolute; 
+    top: 30px; 
+    right: 30px; 
+    display: flex; 
+    gap: 15px;
+}
+
+.edit-link { color: #6366f1; text-decoration: none; }
+.delete-link { color: #ef4444; text-decoration: none; }
+
+/* Header Layout */
+.admin-header-flex {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Container for the Toggle Button */
+.admin-controls {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+/* The Master Edit Toggle */
+.btn-toggle-edit {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: 2px solid #4f46e5;
+    background: transparent;
+    color: #4f46e5;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.btn-toggle-edit.active {
+    background: #4f46e5;
+    color: white;
+}
+
+/* Post Button - specifically for when Edit Mode is ON */
+.btn-post-new {
+    background: #10b981;
+    color: white;
+    padding: 10px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    margin-right: 15px;
+}
