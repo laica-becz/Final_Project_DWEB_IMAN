@@ -1,6 +1,4 @@
 <?php 
-// THINGS TO FIX
-// CHECK HEADER AND FOOTER IF THEY ARE ADMIN ---- FIX LAYOUTING FOR ADMIN REPORTS ---- 
 include "../includes/admin_header.php"; 
 include "../includes/db_conn.php";
 
