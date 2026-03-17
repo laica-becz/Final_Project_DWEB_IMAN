@@ -5,26 +5,37 @@ $message      = '';
 $message_type = '';
 $edit_row     = null;
 
-/* Here will add the trash schedule entry */
+/* Check if schedule_history table exists */
+$check_table    = mysqli_query($conn, "SHOW TABLES LIKE 'schedule_history'");
+$history_exists = ($check_table && mysqli_num_rows($check_table) > 0);
+
+/* ADD */
 if (isset($_POST['add'])) {
     $zone = mysqli_real_escape_string($conn, $_POST['zone']);
     $days = mysqli_real_escape_string($conn, $_POST['days']);
     $time = mysqli_real_escape_string($conn, $_POST['time']);
     $type = mysqli_real_escape_string($conn, $_POST['type']);
 
+    // Insert into main table (last_updated is handled automatically by MySQL)
     $sql = "INSERT INTO trash_schedule (zone, days, time, waste_type)
-            VALUES ('$zone','$days','$time','$type')";
+            VALUES ('$zone', '$days', '$time', '$type')";
 
     if (mysqli_query($conn, $sql)) {
-        header("Location: admin_trashschedule.php");
+        // LOG: record Add action into history table
+        if ($history_exists) {
+            $log = "INSERT INTO schedule_history (action, zone, waste_type, days, time, acted_at)
+                    VALUES ('Added', '$zone', '$type', '$days', '$time', NOW())";
+            mysqli_query($conn, $log);
+        }
+        header("Location: admin_trashschedule.php?add=1&success=added");
         exit();
     } else {
-        $message      = "Failed to add: " . mysqli_error($conn);
+        $message = "Failed to add: " . mysqli_error($conn);
         $message_type = "error";
     }
 }
 
-/* Update the trash schedule entry */
+/* UPDATE */
 if (isset($_POST['update'])) {
     $id   = (int)$_POST['id'];
     $zone = mysqli_real_escape_string($conn, $_POST['zone']);
@@ -32,38 +43,96 @@ if (isset($_POST['update'])) {
     $time = mysqli_real_escape_string($conn, $_POST['time']);
     $type = mysqli_real_escape_string($conn, $_POST['type']);
 
+    // Update main table (last_updated auto-updates via ON UPDATE trigger)
     $sql = "UPDATE trash_schedule
             SET zone='$zone', days='$days', time='$time', waste_type='$type'
             WHERE id=$id";
 
     if (mysqli_query($conn, $sql)) {
-        header("Location: admin_trashschedule.php");
+        // LOG: record Update action into history table
+        if ($history_exists) {
+            $log = "INSERT INTO schedule_history (action, zone, waste_type, days, time, acted_at)
+                    VALUES ('Updated', '$zone', '$type', '$days', '$time', NOW())";
+            mysqli_query($conn, $log);
+        }
+        header("Location: admin_trashschedule.php?add=1&success=updated");
         exit();
     } else {
-        $message      = "Failed to update: " . mysqli_error($conn);
+        $message = "Failed to update: " . mysqli_error($conn);
         $message_type = "error";
     }
 }
 
-/* Delete the trash schedule entry */
+/* DELETE */
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
-    mysqli_query($conn, "DELETE FROM trash_schedule WHERE id=$id");
-    header("Location: admin_trashschedule.php");
+
+    // SELECT the row FIRST — data is gone after delete, so we save it
+    $fetch = mysqli_query($conn, "SELECT * FROM trash_schedule WHERE id=$id");
+    $old   = mysqli_fetch_assoc($fetch);
+
+    if ($old) {
+        $oz = mysqli_real_escape_string($conn, $old['zone']);
+        $ot = mysqli_real_escape_string($conn, $old['waste_type']);
+        $od = mysqli_real_escape_string($conn, $old['days']);
+        $oi = mysqli_real_escape_string($conn, $old['time']);
+
+        // Now safe to delete
+        mysqli_query($conn, "DELETE FROM trash_schedule WHERE id=$id");
+
+        // LOG: record Delete action using the saved $old data
+        if ($history_exists) {
+            $log = "INSERT INTO schedule_history (action, zone, waste_type, days, time, acted_at)
+                    VALUES ('Deleted', '$oz', '$ot', '$od', '$oi', NOW())";
+            mysqli_query($conn, $log);
+        }
+    }
+
+    header("Location: admin_trashschedule.php?add=1&success=deleted");
     exit();
 }
 
-/* Load for editing */
+/* LOAD ROW FOR EDITING */
 if (isset($_GET['edit'])) {
     $id       = (int)$_GET['edit'];
     $res      = mysqli_query($conn, "SELECT * FROM trash_schedule WHERE id=$id");
     $edit_row = mysqli_fetch_assoc($res);
 }
 
-/* ── FETCH ALL ────────────────────────────────────────────────── */
+/* SUCCESS MESSAGES */
+if (isset($_GET['success'])) {
+    $msgs = [
+        'added'   => 'Schedule added successfully!',
+        'updated' => 'Schedule updated successfully!',
+        'deleted' => 'Schedule deleted successfully!',
+    ];
+    if (isset($msgs[$_GET['success']])) {
+        $message      = $msgs[$_GET['success']];
+        $message_type = "success";
+    }
+}
+
+/* FETCH ALL SCHEDULES */
 $result = mysqli_query($conn, "SELECT * FROM trash_schedule ORDER BY zone, waste_type");
 
-/* Static guidelines for admin (also to be displayed to members view) */
+/* FETCH HISTORY LOG + COUNT TOTALS */
+$history_rows  = [];
+$count_added   = 0;
+$count_updated = 0;
+$count_deleted = 0;
+
+if ($history_exists) {
+    $hres = mysqli_query($conn, "SELECT * FROM schedule_history ORDER BY acted_at DESC");
+    while ($h = mysqli_fetch_assoc($hres)) {
+        if ($h['action'] === 'Added')   $count_added++;
+        if ($h['action'] === 'Updated') $count_updated++;
+        if ($h['action'] === 'Deleted') $count_deleted++;
+        $history_rows[] = $h;
+    }
+}
+$total_changes = $count_added + $count_updated + $count_deleted;
+
+/* STATIC GUIDELINES (shared with member view) */
 $guidelines = [
     [
         'title' => 'Biodegradable',
@@ -92,8 +161,8 @@ $guidelines = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trash Collection Schedule – Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/header.css"> <!-- Reuse header CSS for admin header -->
-    <link rel="stylesheet" href="../css/member_trashschedule.css"> <!-- Reuse member CSS for guidelines section -->
+    <link rel="stylesheet" href="../css/header.css">
+    <link rel="stylesheet" href="../css/member_trashschedule.css">
     <link rel="stylesheet" href="../css/admin_trashschedule.css">
 </head>
 <body>
@@ -102,20 +171,24 @@ $guidelines = [
 
 <div class="container">
 
-    <!-- Admin Header class -->
+    <!-- Page Header -->
     <div class="admin-header-row">
         <header>
             <h1><i class="fa-regular fa-calendar-check"></i> Trash Collection Schedule</h1>
             <p>Know when to put out your trash and learn proper waste segregation</p>
         </header>
-        <?php if (!$edit_row && !isset($_GET['add'])): ?>
-        <a href="?add=1" class="btn-add-schedule">
-            <i class="fa-solid fa-plus"></i> Add Schedule
-        </a>
+        <?php if (!isset($_GET['add'])): ?>
+            <a href="?add=1" class="btn-add-schedule">
+                <i class="fa-solid fa-plus"></i> Add Schedule
+            </a>
+        <?php else: ?>
+            <a href="admin_trashschedule.php" class="btn-done">
+                <i class="fa-solid fa-check"></i> Done
+            </a>
         <?php endif; ?>
     </div>
 
-    <!-- Flash message for user feedback and code to be locate easier -->
+    <!-- Flash message (success or error) -->
     <?php if ($message): ?>
     <div class="flash-alert <?= $message_type ?>">
         <i class="fa-solid <?= $message_type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation' ?>"></i>
@@ -123,32 +196,29 @@ $guidelines = [
     </div>
     <?php endif; ?>
 
-    <!-- Collection Schedule by Zone -->
+    <!-- SCHEDULE SECTION -->
     <section class="card-section">
         <h2>Collection Schedule by Zone</h2>
 
-        <!-- ADD FORM (shows when ?add=1) -->
+        <!-- ADD FORM -->
         <?php if (isset($_GET['add']) && !$edit_row): ?>
-        <div class="inline-form-box">
-            <h3 style="margin-bottom:14px; font-size:15px; color:#374151;">Add New Schedule</h3>
+        <div class="add-form-container">
+            <h3 style="margin-bottom:14px;font-size:16px;color:#374151;">Add New Schedule</h3>
             <form method="POST" action="">
                 <div class="form-row-two">
                     <div class="form-field">
                         <label>Zone</label>
-                        <input type="text" name="zone"
-                               placeholder="e.g., Zone A (North District)" required>
+                        <input type="text" name="zone" placeholder="e.g., Zone A (North District)" required>
                     </div>
                     <div class="form-field">
                         <label>Day(s)</label>
-                        <input type="text" name="days"
-                               placeholder="e.g., Monday & Thursday" required>
+                        <input type="text" name="days" placeholder="e.g., Monday & Thursday" required>
                     </div>
                 </div>
                 <div class="form-row-two">
                     <div class="form-field">
                         <label>Time</label>
-                        <input type="text" name="time"
-                               placeholder="e.g., 6:00 AM - 10:00 AM" required>
+                        <input type="text" name="time" placeholder="e.g., 6:00 AM - 10:00 AM" required>
                     </div>
                     <div class="form-field">
                         <label>Waste Type</label>
@@ -160,7 +230,7 @@ $guidelines = [
                 </div>
                 <div class="form-actions-row">
                     <button type="submit" name="add" class="btn-save">
-                        <i class="fa-solid fa-check"></i> Add
+                        <i class="fa-solid fa-check"></i> Add Schedule
                     </button>
                     <a href="admin_trashschedule.php" class="btn-cancel">
                         <i class="fa-solid fa-xmark"></i> Cancel
@@ -170,49 +240,40 @@ $guidelines = [
         </div>
         <?php endif; ?>
 
-        <!-- EDIT FORM (shows when ?edit=ID) -->
+        <!-- EDIT FORM -->
         <?php if ($edit_row): ?>
-        <div class="inline-form-box">
-            <h3 style="margin-bottom:14px; font-size:15px; color:#374151;">Edit Schedule</h3>
+        <div class="edit-form-container">
+            <h3 style="margin-bottom:14px;font-size:16px;color:#374151;">Edit Schedule</h3>
             <form method="POST" action="">
                 <input type="hidden" name="id" value="<?= $edit_row['id'] ?>">
                 <div class="form-row-two">
                     <div class="form-field">
                         <label>Zone</label>
-                        <input type="text" name="zone"
-                               value="<?= htmlspecialchars($edit_row['zone']) ?>" required>
+                        <input type="text" name="zone" value="<?= htmlspecialchars($edit_row['zone']) ?>" required>
                     </div>
                     <div class="form-field">
                         <label>Day(s)</label>
-                        <input type="text" name="days"
-                               value="<?= htmlspecialchars($edit_row['days']) ?>" required>
+                        <input type="text" name="days" value="<?= htmlspecialchars($edit_row['days']) ?>" required>
                     </div>
                 </div>
                 <div class="form-row-two">
                     <div class="form-field">
                         <label>Time</label>
-                        <input type="text" name="time"
-                               value="<?= htmlspecialchars($edit_row['time']) ?>" required>
+                        <input type="text" name="time" value="<?= htmlspecialchars($edit_row['time']) ?>" required>
                     </div>
                     <div class="form-field">
                         <label>Waste Type</label>
                         <select name="type">
-                            <option value="Biodegradable"
-                                <?= $edit_row['waste_type'] === 'Biodegradable' ? 'selected' : '' ?>>
-                                Biodegradable
-                            </option>
-                            <option value="Non-Biodegradable"
-                                <?= $edit_row['waste_type'] === 'Non-Biodegradable' ? 'selected' : '' ?>>
-                                Non-Biodegradable
-                            </option>
+                            <option value="Biodegradable" <?= $edit_row['waste_type']==='Biodegradable' ? 'selected':'' ?>>Biodegradable</option>
+                            <option value="Non-Biodegradable" <?= $edit_row['waste_type']==='Non-Biodegradable' ? 'selected':'' ?>>Non-Biodegradable</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-actions-row">
                     <button type="submit" name="update" class="btn-save">
-                        <i class="fa-solid fa-check"></i> Save
+                        <i class="fa-solid fa-check"></i> Save Changes
                     </button>
-                    <a href="admin_trashschedule.php" class="btn-cancel">
+                    <a href="admin_trashschedule.php?add=1" class="btn-cancel">
                         <i class="fa-solid fa-xmark"></i> Cancel
                     </a>
                 </div>
@@ -220,42 +281,122 @@ $guidelines = [
         </div>
         <?php endif; ?>
 
-        <!-- SCHEDULE LIST -->
+        <!-- EMPTY STATE -->
         <?php if (mysqli_num_rows($result) === 0): ?>
         <div class="empty-hint">
-            No schedules yet. Click <strong>+ Add Schedule</strong> to get started.
+            <i class="fa-solid fa-trash-can" style="font-size:30px;opacity:0.3;margin-bottom:10px;"></i>
+            <p>No schedules yet. Click <strong>+ Add Schedule</strong> to get started.</p>
         </div>
         <?php endif; ?>
 
+        <!-- SCHEDULE LIST -->
         <?php while ($row = mysqli_fetch_assoc($result)): ?>
         <div class="schedule-item">
             <div class="schedule-header">
+                <!-- Zone name left, badge right — matches member view -->
                 <div class="sched-left">
                     <strong><?= htmlspecialchars($row['zone']) ?></strong>
-                    <span class="badge <?= ($row['waste_type'] === 'Biodegradable') ? 'bio' : 'non-bio' ?>">
+                    <span class="badge <?= $row['waste_type']==='Biodegradable' ? 'bio':'non-bio' ?>">
                         <?= htmlspecialchars($row['waste_type']) ?>
                     </span>
                 </div>
-                <div class="sched-actions">
-                    <a href="?edit=<?= $row['id'] ?>" class="icon-btn icon-edit" title="Edit">
+                <?php if (isset($_GET['add']) && !$edit_row): ?>
+                <div class="schedule-actions">
+                    <a href="?edit=<?= $row['id'] ?>&add=1" class="action-btn edit-btn" title="Edit">
                         <i class="fa-solid fa-pen"></i>
                     </a>
-                    <a href="?delete=<?= $row['id'] ?>"
-                       class="icon-btn icon-delete" title="Delete"
+                    <a href="?delete=<?= $row['id'] ?>&add=1" class="action-btn delete-btn" title="Delete"
                        onclick="return confirm('Delete this schedule?')">
                         <i class="fa-solid fa-trash"></i>
                     </a>
                 </div>
+                <?php endif; ?>
             </div>
             <div class="schedule-details">
                 <?= htmlspecialchars($row['days']) ?> • <?= htmlspecialchars($row['time']) ?>
             </div>
+            <div class="last-updated">
+                <i class="fa-regular fa-clock"></i>
+                Last updated: <?= date("M j, Y g:i A", strtotime($row['last_updated'])) ?>
+            </div>
         </div>
         <?php endwhile; ?>
-
     </section>
 
-    <!-- Waste Segregation Guidelines -->
+    <!-- COLLECTION HISTORY TRACKER -->
+    <section class="card-section">
+        <h2><i class="fa-solid fa-clock-rotate-left"></i> Collection History Tracker</h2>
+
+        <?php if (!$history_exists): ?>
+        <div class="empty-hint">
+            <p>Create the <code>schedule_history</code> table first using the SQL shown above.</p>
+        </div>
+        <?php else: ?>
+
+        <!-- Stat cards -->
+        <div class="history-stats">
+            <div class="stat-card">
+                <div class="stat-label">Total changes</div>
+                <div class="stat-value"><?= $total_changes ?></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Added</div>
+                <div class="stat-value added"><?= $count_added ?></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Updated</div>
+                <div class="stat-value updated"><?= $count_updated ?></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Deleted</div>
+                <div class="stat-value deleted"><?= $count_deleted ?></div>
+            </div>
+        </div>
+
+        <!-- History log table -->
+        <?php if (empty($history_rows)): ?>
+        <div class="empty-hint">
+            <i class="fa-solid fa-clock-rotate-left" style="font-size:28px;opacity:0.3;margin-bottom:10px;"></i>
+            <p>No history yet. Add, edit, or delete a schedule to see the log here.</p>
+        </div>
+        <?php else: ?>
+        <div class="history-table-wrapper">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Zone</th>
+                        <th>Waste type</th>
+                        <th>Day(s)</th>
+                        <th>Time</th>
+                        <th>Date &amp; time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($history_rows as $h): ?>
+                    <tr>
+                        <td>
+                            <span class="history-badge <?= strtolower($h['action']) ?>">
+                                <?= htmlspecialchars($h['action']) ?>
+                            </span>
+                        </td>
+                        <td><?= htmlspecialchars($h['zone']) ?></td>
+                        <td><?= htmlspecialchars($h['waste_type']) ?></td>
+                        <td><?= htmlspecialchars($h['days']) ?></td>
+                        <td><?= htmlspecialchars($h['time']) ?></td>
+                        <td class="history-date">
+                            <?= date("M j, Y g:i A", strtotime($h['acted_at'])) ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+        <?php endif; ?>
+        <?php endif; ?>
+    </section>
+
+    <!-- GUIDELINES SECTION (same data as member view) -->
     <section class="card-section">
         <h2><i class="fa-solid fa-recycle"></i> Waste Segregation Guidelines</h2>
         <div class="guidelines-grid">
