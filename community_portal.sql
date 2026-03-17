@@ -34,11 +34,25 @@ CREATE TABLE announcements (
 -- ----------------------------------
 
 CREATE TABLE trash_schedule (
-    trash_id INT AUTO_INCREMENT PRIMARY KEY,
-    zone VARCHAR(255) NOT NULL,
-    days VARCHAR(255) NOT NULL,
+    id INT(11) AUTO_INCREMENT PRIMARY KEY,
+    zone VARCHAR(100) NOT NULL,
+    days VARCHAR(100) NOT NULL,
     time VARCHAR(100) NOT NULL,
-    waste_type VARCHAR(100) NOT NULL
+    waste_type VARCHAR(50) NOT NULL,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+                 ON UPDATE CURRENT_TIMESTAMP
+);
+-- ----------------------------------
+-- Table structure for schedule history
+-- ----------------------------------
+CREATE TABLE schedule_history (
+    id         INT(11)      AUTO_INCREMENT PRIMARY KEY,
+    action     VARCHAR(20)  NOT NULL,
+    zone       VARCHAR(255) NOT NULL,
+    waste_type VARCHAR(100) NOT NULL,
+    days       VARCHAR(255) NOT NULL,
+    time       VARCHAR(100) NOT NULL,
+    acted_at   DATETIME     NOT NULL
 );
 
 -- ----------------------------------
@@ -56,6 +70,17 @@ CREATE TABLE reports (
     admin_note TEXT NULL,
     admin_resolved TIMESTAMP NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `trash_schedule`
+--
+INSERT INTO trash_schedule (zone, days, time, waste_type) VALUES
+('Zone A (North District)', 'Monday & Thursday', '6:00 AM - 10:00 AM', 'Biodegradable'),
+('Zone A (North District)', 'Tuesday & Friday', '6:00 AM - 10:00 AM', 'Non-Biodegradable'),
+('Zone B (South District)', 'Monday & Thursday', '7:00 AM - 11:00 AM', 'Non-Biodegradable'),
+('Zone B (South District)', 'Tuesday & Friday', '7:00 AM - 11:00 AM', 'Biodegradable'),
+('Zone C (East District)', 'Wednesday & Saturday', '6:00 AM - 10:00 AM', 'Biodegradable'),
+('Zone C (East District)', 'Wednesday & Saturday', '2:00 PM - 5:00 PM', 'Non-Biodegradable');
 
 --
 -- Dumping data for table `reports`
