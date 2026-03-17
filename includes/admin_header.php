@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community Portal</title>
-    <link rel="stylesheet" href="../includes/header.css">
-   <!--- <link rel="stylesheet" href="reports.css"> --->
+    <link rel="stylesheet" href="../css/header.css">
 </head>
 <body>
 
