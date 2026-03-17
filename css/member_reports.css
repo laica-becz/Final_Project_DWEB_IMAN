@@ -91,9 +91,9 @@ h1 {
 
 .remove-option{
     float: right; 
-    color: red; 
-    text-decoration: none; 
-    font-weight: bold;
+    color:red; 
+    text-decoration:none; 
+    font-weight:bold;
 }
 
 /*  ARTICLE REPORT CARDS or the article of concerns css */
@@ -150,15 +150,24 @@ h1 {
 }
 
 .admin-reply h3 {
-    margin: 0 0 8px 0;
-    font-size: 0.9rem;
-    color: #1e40af;
+    font-size:1rem; 
+    margin-bottom:10px;
+}
+
+.admin-reply hr {
+    border:0; 
+    border-top:1px solid #eee; 
+    margin:15px 0;
 }
 
 .admin-reply p {
     font-size: 0.9rem;
     margin: 0 0 8px 0;
     color: #334155;
+}
+
+.admin-reply div {
+    margin-top:15px;
 }
 
 .reply-date {
@@ -168,14 +177,17 @@ h1 {
 }
 
 .btn-respond-trigger { 
-    background-color: #2b63f1; color: white; padding: 10px 20px; 
-    border-radius: 10px; border: none; cursor: pointer; 
-    display: inline-flex; align-items: center; gap: 8px; 
-    font-weight: 500; text-decoration: none; font-size: 14px;
+    background-color: #2b63f1; 
+    color: white; 
+    padding: 10px 20px; 
+    border-radius: 8px; 
+    text-decoration: none; 
+    display: inline-block; 
+    font-size: 14px; 
 }
 
 .response-container { 
-    margin-top: 15px; 
+    margin-top:20px; 
     border-top: 1px solid #eee; 
     padding-top: 15px;
 }
@@ -192,25 +204,38 @@ h1 {
 
 .admin-actions { 
     display: flex; 
-    gap: 8px; 
+    gap: 10px; 
+    margin-top: 10px; 
 }
-
+     
 .btn-send { 
     background-color: #2b63f1; 
     color: white; 
     border: none; 
-    padding: 8px 16px; 
-    border-radius: 6px; 
+    padding: 10px 20px; 
+    border-radius: 8px; 
     cursor: pointer; 
 }
 
 .btn-cancel { 
-    background-color: #f0f0f0; 
-    color: #666; 
-    border: none; 
-    padding: 8px 16px; 
-    border-radius: 6px; 
-    cursor: pointer; 
+    background-color: #e0e0e0; 
+    color: #333; 
     text-decoration: none; 
-    font-size: 13px; 
+    padding: 10px 20px; 
+    border-radius: 8px; 
+}
+
+.edit-link { 
+    font-size: 0.8rem; 
+    color: #2b63f1; 
+    text-decoration: none; 
+    margin-left: 15px; 
+    font-weight: normal; 
+}
+            
+.status-select { 
+    padding: 5px; 
+    border-radius: 5px; 
+    border: 1px solid #ddd; 
+    margin-bottom: 10px; 
 }
