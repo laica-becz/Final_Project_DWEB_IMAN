@@ -22,13 +22,13 @@ body {
     background-color: var(--bg-color);
     color: var(--text-main);
     line-height: 1.5;
-    padding-top: 30px; /* MODIFIED */
+    padding-top: 30px;
 }
 
 .container {
     width: 100%;
     max-width: 1000px;
-    margin: 40px auto; 
+    margin: 40px auto;
 }
 
 header h1 {
@@ -72,12 +72,37 @@ header p {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
 }
+
+/* Zone name left, badge right  */
+.sched-left {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.sched-left strong { flex: 1; }
 
 .schedule-details {
     color: var(--text-muted);
     font-size: 13px;
+}
+
+/* Last updated timestamp  */
+.last-updated {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.last-updated i {
+    font-size: 11px;
+    color: #9ca3af;
 }
 
 /* Badges */
@@ -88,8 +113,8 @@ header p {
     font-weight: 600;
 }
 
-.badge.bio { background: var(--green-bg); color: var(--green-primary); }
-.badge.non-bio { background: var(--black-bg); color: var(--black-primary); }
+.badge.bio     { background: var(--green-bg);  color: var(--green-primary); }
+.badge.non-bio { background: var(--black-bg);  color: var(--black-primary); }
 
 /* Guidelines Grid */
 .guidelines-grid {
