@@ -1,5 +1,9 @@
 <?php
 include "../includes/member_header.php";
+include "../includes/db_conn.php";
+
+// Members always see the most up-to-date schedule the admin has set
+$result = mysqli_query($conn, "SELECT * FROM trash_schedule ORDER BY zone, waste_type");
 
 // Data arrays for easy maintenance
 $collection_schedule = [
