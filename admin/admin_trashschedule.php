@@ -1,6 +1,7 @@
 <?php
 include "../includes/admin_header.php";
 include "../includes/db_conn.php";
+require_once '../includes/auth_check.php';
 
 $message      = '';
 $message_type = '';
