@@ -1,94 +1,87 @@
-<?php
-require_once '../includes/auth_check.php';
+<?php 
 include "../includes/admin_header.php"; 
 include "../includes/db_conn.php";
 
-//HANDLE ADMIN ANNOUNCEMENT (ADD NEW NOTICE BUTTON)
-if (isset($_POST['btn_save'])) {
-    $title = $_POST['txt_title'];
-    $content = $_POST['txt_content'];
+//ADD ANNOUNCEMENT 
+if (isset($_POST['btn_save'])) { //When admin submit/post an announcemrnt
+    $title = mysqli_real_escape_string($conn, $_POST['txt_title']);
+    $content = mysqli_real_escape_string($conn, $_POST['txt_content']);
     $name = "Administrator"; 
     $tag = "Announcement";
 
-    try {
-        $stmt = $pdo->prepare("INSERT INTO reports (report_name, report_title, report_tag, report_content, status) 
-                VALUES (?, ?, ?, ?, 'Resolved')");
-        $stmt->execute([$name, $title, $tag, $content]);
+    $sql = "INSERT INTO reports (report_name, report_title, report_tag, report_content, status) 
+            VALUES ('$name', '$title', '$tag', '$content', 'Resolved')";
+
+    if (mysqli_query($conn, $sql)) { //prevents duplicate submissions when refreshing
         header("Location: admin_reports.php"); 
         exit();
-    } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
     }
 }
 
-//HANDLE RESPOND TO REPORT & EDIT ANNOUNCEMENT LOGIC
+//HANDLE RESPOND TO REPORT & ADD NEW ANNOUNCEMENT LOGIC
 if (isset($_POST['btn_send_response'])) {
-    $report_id = $_POST['report_id'];
-    $admin_note = $_POST['txt_admin_response'];
+    $report_id = mysqli_real_escape_string($conn, $_POST['report_id']);
+    $admin_note = mysqli_real_escape_string($conn, $_POST['txt_admin_response']);
     
+    // Only update status if it's NOT an announcement
+    $status_update = "";
+    if (isset($_POST['txt_status'])) {
+        $new_status = mysqli_real_escape_string($conn, $_POST['txt_status']);
+        $status_update = ", status = '$new_status'";
+    }
+
+    //Updates the sql reports table
     $current_date = date("Y-m-d H:i:s");
-    
-    try {
-        // Only update status if it's NOT an announcement
-        if (isset($_POST['txt_status'])) {
-            $new_status = $_POST['txt_status'];
-            $stmt = $pdo->prepare("UPDATE reports SET 
-                    admin_note = ?, 
-                    admin_resolved = ?,
-                    status = ?
-                    WHERE report_id = ?");
-            $stmt->execute([$admin_note, $current_date, $new_status, $report_id]);
-        } else {
-            $stmt = $pdo->prepare("UPDATE reports SET 
-                    admin_note = ?, 
-                    admin_resolved = ?
-                    WHERE report_id = ?");
-            $stmt->execute([$admin_note, $current_date, $report_id]);
-        }
-        
+    $sql = "UPDATE reports SET 
+            admin_note = '$admin_note', 
+            admin_resolved = '$current_date'
+            $status_update 
+            WHERE report_id = '$report_id'";
+
+    if (mysqli_query($conn, $sql)) {
         header("Location: admin_reports.php");
         exit();
-    } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
     }
 }
 
 // HANDLE DELETE
 if (isset($_GET['delete_id'])) {
-    $id = $_GET['delete_id'];
-    
-    try {
-        $stmt = $pdo->prepare("DELETE FROM reports WHERE report_id = ?");
-        $stmt->execute([$id]);
+    $id = mysqli_real_escape_string($conn, $_GET['delete_id']);
+    $sql = "DELETE FROM reports WHERE report_id = '$id'";
+    if (mysqli_query($conn, $sql)) {
         header("Location: admin_reports.php");
         exit();
-    } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>(ADMIN) Reports & Concerns</title>
-        <link rel="stylesheet" href="../css/member_reports.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <!---The page uses the same css of member_reports.php--->
+        <link rel="stylesheet" href="../css/member_reports.css"> 
     </head>
     <body>
         <div class="content-wrapper"> 
             <div class="container">    
+
+                <!--|| HEADER SECTION OF THE PAGE ||-->
                 <div class="page-header">
                     <div class="header-content">
                         <h1>Admin - Reports & Concerns</h1> 
                         <p class="subtitle">Monitor concerns and post announcements</p>
                     </div>
+
+                    <!---Edit Button of the Admin (Where the Admin can post announcements)--->
                     <?php if (!isset($_GET['show_form'])): ?> 
-                        <a href="?show_form=true" class="btn-submit">Add New Notice</a>
+                        <a href="?show_form=true" class="btn-submit">Add New Notice</a> 
                     <?php endif; ?>
                 </div>
                 
+                <!---The form structure shows, once the above codes are confirmed or was confirmed that the button "Add New Notice" was clicked once--->
                 <?php if (isset($_GET['show_form'])): ?> 
                     <div class="report-card">
                         <h2>ADMIN ANNOUNCEMENT</h2>
@@ -101,15 +94,17 @@ if (isset($_GET['delete_id'])) {
                     </div>
                 <?php endif; ?>
 
-                <!---REPORTS DISPLAYED--->
+                <!---Below the Header of the Page the REPORTS are DISPLAYED (Same reports that are from member_reports.php--->
                 <main class="report-list">
                     <?php 
-                        $stmt = $pdo->query("SELECT * FROM reports ORDER BY report_submitted DESC");
+                        $query = "SELECT * FROM reports ORDER BY report_submitted DESC";
+                        $result = mysqli_query($conn, $query);
                         
-                        while($report = $stmt->fetch()) {
+                        while($report = mysqli_fetch_assoc($result)) {
                             $isAnnouncement = ($report['report_tag'] == 'Announcement');
                     ?>
-                    <!---REPORT CARDS STRUCTURE--->
+                    
+                    <!--|| REPORT CARDS STRUCTURE ||-->
                     <article class="report-card">
                         <div class="badge-container">
                             <?php if(!$isAnnouncement): ?>
@@ -119,24 +114,27 @@ if (isset($_GET['delete_id'])) {
                             <span class="badge tag"><?php echo $report['report_tag']; ?></span>
                         </div>
 
-                        <a href="?delete_id=<?php echo $report['report_id']; ?>" onclick="return confirm('Remove this item?')" class="remove-option" >&times; Remove</a>
+                            <a href="?delete_id=<?php echo $report['report_id']; ?>" onclick="return confirm('Remove this item?')" class="remove-option" >&times; Remove</a>
 
-                        <h2><?php echo htmlspecialchars($report['report_title']); ?></h2> 
-                        <p class="report-text"><?php echo htmlspecialchars($report['report_content']); ?></p>
+                                <h2><?php echo htmlspecialchars($report['report_title']); ?></h2> 
+                                <p class="report-text"><?php echo htmlspecialchars($report['report_content']); ?></p>
 
                         <div class="author-meta">
                             Submitted by <?php echo htmlspecialchars($report['report_name']); ?> on <?php echo date("F j, Y", strtotime($report['report_submitted'])); ?>
                         </div>
 
+                        <!--|| RESPOND TO REPORT or ADD MORE ANNOUNCEMENT BUTTON STRUCTURES ||-->
                         <div class="response-container">
                             <?php 
                             if( (empty($report['admin_note']) && isset($_GET['reply_to']) && $_GET['reply_to'] == $report['report_id']) || 
                                 (!empty($report['admin_note']) && isset($_GET['edit_id']) && $_GET['edit_id'] == $report['report_id']) ): 
                             ?>
+                                <!--- Shows Respond Textbox once the "Respond to Report" or "Add More Annoucement" is clicked--->
                                 <form method="POST">
                                     <input type="hidden" name="report_id" value="<?php echo $report['report_id']; ?>">
                                     
-                                    <?php if(!$isAnnouncement): ?>
+                                    
+                                    <?php if(!$isAnnouncement): ?><!---Status are only visible to "Repond to report" button--->
                                         <label>Set Status: </label>
                                         <select name="txt_status" class="status-select">
                                             <option value="Pending" <?php if($report['status'] == 'Pending') echo 'selected'; ?>>Pending</option>
@@ -154,16 +152,18 @@ if (isset($_GET['delete_id'])) {
                                         <a href="admin_reports.php" class="btn-cancel">Cancel</a>
                                     </div>
                                 </form>
-
+                            
+                            <!--- Response Buttons --->
                             <?php elseif(empty($report['admin_note'])): ?>
                                 <a href="?reply_to=<?php echo $report['report_id']; ?>" class="btn-respond-trigger">
                                     <?php if($isAnnouncement): ?>
-                                        Add more announce
+                                        Add more announcement
                                     <?php else: ?>
                                         Respond to Report
                                     <?php endif; ?>
                                 </a>
                             
+                            <!--- After Responding Buttons --->
                             <?php else: ?>
                                 <section class="admin-reply">
                                     <hr>
@@ -171,7 +171,6 @@ if (isset($_GET['delete_id'])) {
                                         <?php echo $isAnnouncement ? 'Additional Information' : 'Administrator Response'; ?> 
                                     </h3>
                                     <p><?php echo htmlspecialchars($report['admin_note']); ?></p>
-                                    
                                     <div>
                                         <a href="?edit_id=<?php echo $report['report_id']; ?>" class="btn-respond-trigger">
                                             <?php echo $isAnnouncement ? 'Continue announcement' : 'Edit Response'; ?>
@@ -179,6 +178,7 @@ if (isset($_GET['delete_id'])) {
                                     </div>
                                 </section>
                             <?php endif; ?>
+
                         </div>
                     </article>
                     <?php } ?>
@@ -187,4 +187,7 @@ if (isset($_GET['delete_id'])) {
         </div>
     </body>
 </html>
-<?php include "../includes/footer.php"; ?>
+
+<?php 
+include "../includes/member_footer.php"; 
+?>
