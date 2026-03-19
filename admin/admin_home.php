@@ -8,39 +8,49 @@ include "../includes/db_conn.php";
 // This triggers when the admin clicks the "Save" button in the form
 if (isset($_POST['btn_save_announcement'])) {
     
-    // We "clean" the input data to prevent hackers from breaking the database (SQL Injection)
-    $title = mysqli_real_escape_string($conn, $_POST['txt_title']);
-    $content = mysqli_real_escape_string($conn, $_POST['txt_content']);
-    $priority = mysqli_real_escape_string($conn, $_POST['txt_priority']);
-    $event_date = mysqli_real_escape_string($conn, $_POST['txt_date']); 
+    // Get the input data (PDO handles escaping automatically with prepared statements)
+    $title = $_POST['txt_title'];
+    $content = $_POST['txt_content'];
+    $priority = $_POST['txt_priority'];
+    $event_date = $_POST['txt_date']; 
     
     // Choose a CSS class based on priority so High Priority looks different (usually red)
     $class = ($priority == 'High Priority') ? 'high' : 'normal';
 
-    // CHECK: Are we updating an old post or making a brand new one?
-    if (isset($_POST['edit_id']) && !empty($_POST['edit_id'])) {
-        // UPDATE: Change existing data where the ID matches
-        $edit_id = mysqli_real_escape_string($conn, $_POST['edit_id']);
-        $sql = "UPDATE announcements SET title='$title', content='$content', priority='$priority', class='$class', date='$event_date' WHERE id='$edit_id'";
-    } else {
-        // INSERT: Create a completely new row in the database
-        $sql = "INSERT INTO announcements (title, content, priority, class, date) VALUES ('$title', '$content', '$priority', '$class', '$event_date')";
-    }
+    try {
+        // CHECK: Are we updating an old post or making a brand new one?
+        if (isset($_POST['edit_id']) && !empty($_POST['edit_id'])) {
+            // UPDATE: Change existing data where the ID matches
+            $edit_id = $_POST['edit_id'];
+            $stmt = $pdo->prepare("UPDATE announcements SET title=?, content=?, priority=?, class=?, date=? WHERE id=?");
+            $stmt->execute([$title, $content, $priority, $class, $event_date, $edit_id]);
+        } else {
+            // INSERT: Create a completely new row in the database
+            $stmt = $pdo->prepare("INSERT INTO announcements (title, content, priority, class, date) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$title, $content, $priority, $class, $event_date]);
+        }
 
-    // Execute the command. If it works, refresh the page to show the changes
-    if (mysqli_query($conn, $sql)) {
+        // If it works, refresh the page to show the changes
         header("Location: admin_home.php?mode=edit");
         exit();
+        
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
     }
 }
 
 // --- 2. HANDLE DELETE (Removing Data) ---
 // This triggers if "delete_id" is found in the URL (e.g., admin_home.php?delete_id=5)
 if (isset($_GET['delete_id'])) {
-    $delete_id = mysqli_real_escape_string($conn, $_GET['delete_id']);
-    if (mysqli_query($conn, "DELETE FROM announcements WHERE id='$delete_id'")) {
+    $delete_id = $_GET['delete_id'];
+    
+    try {
+        $stmt = $pdo->prepare("DELETE FROM announcements WHERE id=?");
+        $stmt->execute([$delete_id]);
         header("Location: admin_home.php?mode=edit");
         exit();
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
     }
 }
 
@@ -54,9 +64,10 @@ $edit_data = null;
 
 // If we are editing, go fetch that specific post's current data from the database to fill the form
 if (isset($_GET['edit_id'])) {
-    $edit_id = mysqli_real_escape_string($conn, $_GET['edit_id']);
-    $edit_result = mysqli_query($conn, "SELECT * FROM announcements WHERE id='$edit_id'");
-    $edit_data = mysqli_fetch_assoc($edit_result);
+    $edit_id = $_GET['edit_id'];
+    $stmt = $pdo->prepare("SELECT * FROM announcements WHERE id=?");
+    $stmt->execute([$edit_id]);
+    $edit_data = $stmt->fetch();
 }
 ?>
 
@@ -139,8 +150,8 @@ if (isset($_GET['edit_id'])) {
         <?php endif; ?>
 
         <?php 
-        $list_result = mysqli_query($conn, "SELECT * FROM announcements ORDER BY date DESC");
-        while ($item = mysqli_fetch_assoc($list_result)) { 
+        $stmt = $pdo->query("SELECT * FROM announcements ORDER BY date DESC");
+        while ($item = $stmt->fetch()) { 
         ?>
             <div class="card" style="position: relative;">
                 <?php if ($is_edit_mode): ?>
