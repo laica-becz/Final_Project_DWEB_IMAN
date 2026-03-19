@@ -1,0 +1,427 @@
+
+/* =============================================
+   admin_home.css
+   ============================================= */
+
+
+/* --- Page Layout & Centering --- */
+body {
+    background-color: #f3f4f6;
+    padding-top: 0;
+}
+
+.container {
+    width: 100%;
+    max-width: 860px;
+    margin: 70px auto 40px auto;
+    padding: 0 24px;
+    box-sizing: border-box;
+}
+
+/* --- Page Header --- */
+.announcements-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+.title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.announcements-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.main-megaphone {
+    color: #534AB7;
+    font-size: 2rem;
+    transform: rotate(-15deg);
+    display: flex;
+    align-items: center;
+}
+
+.admin-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+/* --- Active Announcement Cards --- */
+.card {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 8px;
+}
+
+.card p {
+    font-size: 0.9rem;
+    color: #4b5563;
+    line-height: 1.6;
+    margin-bottom: 14px;
+}
+
+.card .date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: #9ca3af;
+}
+
+.card .date .material-symbols-outlined {
+    font-size: 1rem;
+}
+
+
+/* --- Priority Badges --- */
+.badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 50px;
+    margin-bottom: 10px;
+}
+
+.badge.high   { background-color: #fee2e2; color: #991b1b; }
+.badge.normal { background-color: #dbeafe; color: #1e40af; }
+
+
+/* --- Shared Button Base --- */
+.btn-post-new,
+.btn-mode-toggle,
+.btn-save,
+.btn-cancel,
+.btn-restore,
+.btn-perm-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity 0.15s ease;
+    font-family: inherit;
+    line-height: 1;
+    box-sizing: border-box;
+}
+
+.btn-post-new:hover,
+.btn-mode-toggle:hover,
+.btn-save:hover,
+.btn-cancel:hover,
+.btn-restore:hover,
+.btn-perm-delete:hover {
+    opacity: 0.85;
+}
+
+.btn-post-new .material-symbols-outlined,
+.btn-mode-toggle .material-symbols-outlined,
+.btn-save .material-symbols-outlined,
+.btn-cancel .material-symbols-outlined,
+.btn-restore .material-symbols-outlined,
+.btn-perm-delete .material-symbols-outlined {
+    font-size: 1rem;
+}
+
+
+/* --- Button Variants --- */
+
+/* Green: New Post, Save */
+.btn-post-new,
+.btn-save {
+    background-color: #1D9E75;
+    color: #ffffff;
+    border: none;
+}
+
+/* Purple outlined: Edit Mode (off state) */
+.btn-mode-toggle.mode-off {
+    background-color: transparent;
+    color: #534AB7;
+    border: 1.5px solid #534AB7;
+}
+
+/* Purple solid: Exit Edit Mode (on state) */
+.btn-mode-toggle.mode-on {
+    background-color: #534AB7;
+    color: #ffffff;
+    border: 1.5px solid #534AB7;
+}
+
+/* Gray: Cancel */
+.btn-cancel {
+    background-color: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+}
+
+/* Green tint: Restore */
+.btn-restore {
+    background-color: #E1F5EE;
+    color: #085041;
+    border: 1px solid #5DCAA5;
+}
+
+/* Red tint: Delete Forever */
+.btn-perm-delete {
+    background-color: #FCEBEB;
+    color: #791F1F;
+    border: 1px solid #F09595;
+}
+
+
+/* --- Icon Buttons (Edit / Delete on each card) --- */
+.edit-link,
+.delete-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background-color: #ffffff;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+    box-sizing: border-box;
+}
+
+.edit-link:hover   { background-color: #f3f4f6; }
+.delete-link:hover { background-color: #fef2f2; }
+
+.edit-link .material-symbols-outlined {
+    font-size: 1.1rem;
+    color: #534AB7;
+}
+
+.delete-link .material-symbols-outlined {
+    font-size: 1.1rem;
+    color: #E24B4A;
+}
+
+.card-actions {
+    position: absolute;
+    top: 22px;
+    right: 22px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.card-title-edit {
+    margin-right: 88px;
+}
+
+
+/* --- Add / Edit Form --- */
+.admin-form-card {
+    background-color: #ffffff;
+    border: 1.5px solid #534AB7;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
+
+.form-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 18px;
+}
+
+.admin-form-group {
+    margin-bottom: 14px;
+}
+
+.admin-form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 5px;
+}
+
+.admin-input {
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+    color: #111827;
+    font-size: 0.85rem;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.admin-input:focus {
+    outline: none;
+    border-color: #534AB7;
+    background-color: #ffffff;
+}
+
+.admin-textarea {
+    height: 80px;
+    resize: vertical;
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+
+/* --- Recently Deleted Section --- */
+.trash-section {
+    margin-top: 36px;
+}
+
+.trash-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.trash-divider-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #9ca3af;
+    white-space: nowrap;
+}
+
+.trash-divider-label .material-symbols-outlined {
+    font-size: 0.95rem;
+    color: #9ca3af;
+}
+
+.trash-divider-line {
+    flex: 1;
+    height: 1px;
+    background-color: #e5e7eb;
+}
+
+.trash-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+}
+
+.trash-card-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.trash-card-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.trash-card h3 {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 5px;
+}
+
+.trash-card p {
+    font-size: 0.82rem;
+    color: #9ca3af;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.deleted-date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+.deleted-date .material-symbols-outlined {
+    font-size: 0.85rem;
+    color: #d1d5db;
+}
+
+.trash-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.trash-empty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 0;
+    font-size: 0.85rem;
+    color: #9ca3af;
+}
+
+.trash-empty .material-symbols-outlined {
+    font-size: 1.1rem;
+    color: #d1d5db;
+}
+
+
+/* --- Mobile Responsive --- */
+@media (max-width: 640px) {
+    .container {
+        padding: 0 16px;
+        margin: 20px auto;
+    }
+    .announcements-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+    .admin-controls {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    .trash-card-inner {
+        flex-direction: column;
+    }
+    .trash-actions {
+        flex-direction: row;
+        width: 100%;
+    }
+    .announcements-header h1 {
+        font-size: 1.3rem;
+    }
+}
