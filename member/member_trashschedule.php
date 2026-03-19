@@ -110,6 +110,6 @@ $guidelines = [
     </section>
 </div>
 
-<?php include "../includes/member_footer.php"; ?>
+<?php include "../includes/footer.php"; ?>
 </body>
 </html>
