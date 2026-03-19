@@ -18,11 +18,18 @@
             <a href="../member/contact.php" class="nav-item"><i class="fa-solid fa-phone"></i> Contact</a>
         </div>
         <div class="user-actions">
-            <button class="btn-user"><i class="fa-solid fa-user"></i> Admin</button>
-            <button class="btn-logout" onclick="window.location.href='../includes/logout.php'">
+            <button class="btn-admin">Admin</button>
+            <button class="btn-logout" onclick="confirmLogout()">
                 <i class="fa-solid fa-right-from-bracket"></i> Logout
             </button>
         </div>
-</nav>
+    </nav>
+    <script>
+        function confirmLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '../includes/logout.php';
+            }
+        }
+    </script>
 </body>
 </html>
