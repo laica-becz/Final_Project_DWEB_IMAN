@@ -12,10 +12,10 @@
         <div class="logo">Community Portal</div>
         <div class="nav-links">
             <a href="../admin/admin_home.php" class="nav-item"><i class="fa-solid fa-house"></i> Home</a>
-            <a href="about.php" class="nav-item"><i class="fa-solid fa-circle-info"></i> About</a>
+            <a href="../admin/about.php" class="nav-item"><i class="fa-solid fa-circle-info"></i> About</a>
             <a href="../admin/admin_trashschedule.php" class="nav-item"><i class="fa-solid fa-calendar-days"></i> Trash Schedule</a>
             <a href="admin_reports.php" class="nav-item"><i class="fa-solid fa-comment-dots"></i> Reports</a>
-            <a href="../member/contact.php" class="nav-item"><i class="fa-solid fa-phone"></i> Contact</a>
+            <a href="../admin/contact.php" class="nav-item"><i class="fa-solid fa-phone"></i> Contact</a>
         </div>
         <div class="user-actions">
             <button class="btn-admin">Admin</button>
