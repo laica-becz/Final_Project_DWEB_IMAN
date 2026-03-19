@@ -1,7 +1,6 @@
 <?php
 // --- SETUP ---
 // This is the MEMBER/USER side — view only, no editing allowed
-require_once '../includes/auth_check.php';
 include "../includes/member_header.php";
 include "../includes/db_conn.php";
 ?>
