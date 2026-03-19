@@ -3,7 +3,8 @@ include "../includes/member_header.php";
 include "../includes/db_conn.php";
 
 // Members always see the most up-to-date schedule the admin has set
-$result = mysqli_query($conn, "SELECT * FROM trash_schedule ORDER BY zone, waste_type");
+$stmt = $pdo->query("SELECT * FROM trash_schedule ORDER BY zone, waste_type");
+$schedules = $stmt->fetchAll();
 
 // Guidelines array (static — same as admin view)
 $guidelines = [
@@ -47,13 +48,13 @@ $guidelines = [
     <section class="card-section">
         <h2>Collection Schedule by Zone</h2>
 
-        <?php if (mysqli_num_rows($result) === 0): ?>
+        <?php if (count($schedules) === 0): ?>
         <div class="empty-hint">
             <p>No schedules available yet. Please check back later.</p>
         </div>
         <?php else: ?>
         <div class="schedule-grid">
-            <?php while ($row = mysqli_fetch_assoc($result)): ?>
+            <?php foreach ($schedules as $row): ?>
             <div class="schedule-item">
 
                 <div class="schedule-header">
@@ -76,7 +77,7 @@ $guidelines = [
                 </div>
 
             </div>
-            <?php endwhile; ?>
+            <?php endforeach; ?>
         </div>
         <?php endif; ?>
     </section>
