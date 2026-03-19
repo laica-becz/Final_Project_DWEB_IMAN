@@ -13,7 +13,7 @@ if (
     // Wipe everything and kick out
     session_unset();
     session_destroy();
-    header('Location: ../index.php?error=unauthorized');
+    header('Location: /FinalProject/index.php?error=unauthorized');
     exit;
 }
 
@@ -22,7 +22,7 @@ $timeout = 2 * 60 * 60; // 2 hours
 if (isset($_SESSION['login_time']) && (time() - $_SESSION['login_time']) > $timeout) {
     session_unset();
     session_destroy();
-    header('Location: ../index.php?error=timeout');
+    header('Location: /FinalProject/index.php?error=timeout');
     exit;
 }
 
