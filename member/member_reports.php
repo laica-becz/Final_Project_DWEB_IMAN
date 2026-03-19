@@ -4,20 +4,21 @@ include "../includes/db_conn.php";
 
 if (isset($_POST['btn_save'])) 
 { 
-    $name = mysqli_real_escape_string($conn, $_POST['txt_name']);
-    $title = mysqli_real_escape_string($conn, $_POST['txt_title']);
-    $tag = mysqli_real_escape_string($conn, $_POST['txt_tag']);
-    $content = mysqli_real_escape_string($conn, $_POST['txt_content']);
+    $name = $_POST['txt_name'];
+    $title = $_POST['txt_title'];
+    $tag = $_POST['txt_tag'];
+    $content = $_POST['txt_content'];
 
-    $sql = "INSERT INTO reports (report_name, report_title, report_tag, report_content) 
-            VALUES ('$name', '$title', '$tag', '$content')";
-
-    if (mysqli_query($conn, $sql)) 
-    {
-        header("Location: " . $_SERVER['PHP_SELF']); 
-        exit();
-    } else {
-        echo "Error: " . mysqli_error($conn);
+    try {
+        $stmt = $pdo->prepare("INSERT INTO reports (report_name, report_title, report_tag, report_content) 
+                VALUES (?, ?, ?, ?)");
+        
+        if ($stmt->execute([$name, $title, $tag, $content])) {
+            header("Location: " . $_SERVER['PHP_SELF']); 
+            exit();
+        }
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
     }
 }
 ?>
@@ -38,13 +39,13 @@ if (isset($_POST['btn_save']))
                     <div class="header-content">
                         <div class="title-row">
                             <h1>Reports & Concerns</h1> 
-                    </div>
+                        </div>
                         <p class="subtitle">Submit your concerns and track their resolution</p>
-                </div>
+                    </div>
                     <?php if (!isset($_GET['show_form'])): ?> 
                         <a href="?show_form=true" class="btn-submit">+ Submit New Report</a>
                     <?php endif; ?>
-            </div>
+                </div>
             
             <?php if (isset($_GET['show_form'])): ?> 
                 <div class="report-card">
@@ -66,12 +67,10 @@ if (isset($_POST['btn_save']))
 
             <main class="report-list">
                 <?php 
-                    $query = "SELECT * FROM reports ORDER BY report_submitted DESC";
-                    $result = mysqli_query($conn, $query);
-                    if (mysqli_num_rows($result) > 0)
-                    {
-                        while($report = mysqli_fetch_assoc($result)) 
-                        {
+                    $stmt = $pdo->query("SELECT * FROM reports ORDER BY report_submitted DESC");
+                    
+                    if ($stmt->rowCount() > 0) {
+                        while($report = $stmt->fetch()) {
                             // CHECK IF POST IS AN ANNOUNCEMENT
                             $isAnnouncement = ($report['report_tag'] == 'Announcement');
                     ?>
@@ -114,5 +113,5 @@ if (isset($_POST['btn_save']))
 </html>
 
 <?php 
-include "../includes/member_footer.php"; 
+include "../includes/footer.php"; 
 ?>
