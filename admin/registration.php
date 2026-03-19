@@ -1,4 +1,11 @@
 <?php
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => 'localhost',
+    'secure' => false,
+    'httponly' => true,
+]);
 session_start();
 require_once '../includes/db_conn.php';
 
@@ -7,7 +14,7 @@ $error = '';
 
 // Check if admin is already logged in
 if (isset($_SESSION['admin_id'])) {
-    header('Location: admin_home.php');
+    header('Location: /FinalProject/admin/admin_home.php');
     exit;
 }
 
