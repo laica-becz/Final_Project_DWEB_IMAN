@@ -1,9 +1,14 @@
 <?php
-// Ensure session is active
 if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'domain' => 'localhost',
+        'secure' => false,
+        'httponly' => true,
+    ]);
     session_start();
 }
-
 // Check if admin session exists
 if (
     !isset($_SESSION['admin_id']) ||
