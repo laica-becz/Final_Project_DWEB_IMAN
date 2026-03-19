@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../includes/db.php';
+require_once '../includes/db_conn.php';
 
 // KAILANGAN POST LANG PALA TOH
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
