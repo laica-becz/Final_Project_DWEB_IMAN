@@ -1,4 +1,11 @@
 <?php
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => 'localhost',
+    'secure' => false,
+    'httponly' => true,
+]);
 session_start();
 require_once '../includes/db_conn.php';
 
@@ -25,9 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['admin_email'] = $admin['email'];
             $_SESSION['role']        = 'admin';
             $_SESSION['login_time']  = time();
-            
-            header('Location: /FinalProject/admin/admin_home.php');
-            exit;
+
+           header('Location: /FinalProject/admin/admin_home.php');
+           exit;
             
         } else {
             header('Location: /FinalProject/index.php?error=invalid');
