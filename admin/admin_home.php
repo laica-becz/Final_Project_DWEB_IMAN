@@ -170,5 +170,5 @@ if (isset($_GET['edit_id'])) {
         <?php } ?>
     </main>
 </body>
-    <?php include "../includes/member_footer.php"; ?>
+    <?php include "../includes/footer.php"; ?>
 </html>
