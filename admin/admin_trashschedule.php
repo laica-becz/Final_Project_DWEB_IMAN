@@ -1,4 +1,5 @@
 <?php
+include "../includes/admin_header.php";
 include "../includes/db_conn.php";
 
 $message      = '';
@@ -6,31 +7,33 @@ $message_type = '';
 $edit_row     = null;
 
 /* Check if schedule_history table exists */
-$check_table    = mysqli_query($conn, "SHOW TABLES LIKE 'schedule_history'");
-$history_exists = ($check_table && mysqli_num_rows($check_table) > 0);
+$check_table    = $pdo->query("SHOW TABLES LIKE 'schedule_history'");
+$history_exists = ($check_table && $check_table->rowCount() > 0);
 
 /* ADD */
 if (isset($_POST['add'])) {
-    $zone = mysqli_real_escape_string($conn, $_POST['zone']);
-    $days = mysqli_real_escape_string($conn, $_POST['days']);
-    $time = mysqli_real_escape_string($conn, $_POST['time']);
-    $type = mysqli_real_escape_string($conn, $_POST['type']);
+    $zone = $_POST['zone'];
+    $days = $_POST['days'];
+    $time = $_POST['time'];
+    $type = $_POST['type'];
 
-    // Insert into main table (last_updated is handled automatically by MySQL)
-    $sql = "INSERT INTO trash_schedule (zone, days, time, waste_type)
-            VALUES ('$zone', '$days', '$time', '$type')";
+    try {
+        // Insert into main table (last_updated is handled automatically by MySQL)
+        $stmt = $pdo->prepare("INSERT INTO trash_schedule (zone, days, time, waste_type)
+                VALUES (?, ?, ?, ?)");
+        $stmt->execute([$zone, $days, $time, $type]);
 
-    if (mysqli_query($conn, $sql)) {
         // LOG: record Add action into history table
         if ($history_exists) {
-            $log = "INSERT INTO schedule_history (action, zone, waste_type, days, time, acted_at)
-                    VALUES ('Added', '$zone', '$type', '$days', '$time', NOW())";
-            mysqli_query($conn, $log);
+            $log_stmt = $pdo->prepare("INSERT INTO schedule_history (action, zone, waste_type, days, time, acted_at)
+                    VALUES ('Added', ?, ?, ?, ?, NOW())");
+            $log_stmt->execute([$zone, $type, $days, $time]);
         }
+        
         header("Location: admin_trashschedule.php?add=1&success=added");
         exit();
-    } else {
-        $message = "Failed to add: " . mysqli_error($conn);
+    } catch (PDOException $e) {
+        $message = "Failed to add: " . $e->getMessage();
         $message_type = "error";
     }
 }
@@ -38,27 +41,29 @@ if (isset($_POST['add'])) {
 /* UPDATE */
 if (isset($_POST['update'])) {
     $id   = (int)$_POST['id'];
-    $zone = mysqli_real_escape_string($conn, $_POST['zone']);
-    $days = mysqli_real_escape_string($conn, $_POST['days']);
-    $time = mysqli_real_escape_string($conn, $_POST['time']);
-    $type = mysqli_real_escape_string($conn, $_POST['type']);
+    $zone = $_POST['zone'];
+    $days = $_POST['days'];
+    $time = $_POST['time'];
+    $type = $_POST['type'];
 
-    // Update main table (last_updated auto-updates via ON UPDATE trigger)
-    $sql = "UPDATE trash_schedule
-            SET zone='$zone', days='$days', time='$time', waste_type='$type'
-            WHERE id=$id";
+    try {
+        // Update main table (last_updated auto-updates via ON UPDATE trigger)
+        $stmt = $pdo->prepare("UPDATE trash_schedule
+                SET zone=?, days=?, time=?, waste_type=?
+                WHERE id=?");
+        $stmt->execute([$zone, $days, $time, $type, $id]);
 
-    if (mysqli_query($conn, $sql)) {
         // LOG: record Update action into history table
         if ($history_exists) {
-            $log = "INSERT INTO schedule_history (action, zone, waste_type, days, time, acted_at)
-                    VALUES ('Updated', '$zone', '$type', '$days', '$time', NOW())";
-            mysqli_query($conn, $log);
+            $log_stmt = $pdo->prepare("INSERT INTO schedule_history (action, zone, waste_type, days, time, acted_at)
+                    VALUES ('Updated', ?, ?, ?, ?, NOW())");
+            $log_stmt->execute([$zone, $type, $days, $time]);
         }
+        
         header("Location: admin_trashschedule.php?add=1&success=updated");
         exit();
-    } else {
-        $message = "Failed to update: " . mysqli_error($conn);
+    } catch (PDOException $e) {
+        $message = "Failed to update: " . $e->getMessage();
         $message_type = "error";
     }
 }
@@ -67,36 +72,39 @@ if (isset($_POST['update'])) {
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
 
-    // SELECT the row FIRST — data is gone after delete, so we save it
-    $fetch = mysqli_query($conn, "SELECT * FROM trash_schedule WHERE id=$id");
-    $old   = mysqli_fetch_assoc($fetch);
+    try {
+        // SELECT the row FIRST — data is gone after delete, so we save it
+        $fetch_stmt = $pdo->prepare("SELECT * FROM trash_schedule WHERE id=?");
+        $fetch_stmt->execute([$id]);
+        $old = $fetch_stmt->fetch();
 
-    if ($old) {
-        $oz = mysqli_real_escape_string($conn, $old['zone']);
-        $ot = mysqli_real_escape_string($conn, $old['waste_type']);
-        $od = mysqli_real_escape_string($conn, $old['days']);
-        $oi = mysqli_real_escape_string($conn, $old['time']);
+        if ($old) {
+            // Now safe to delete
+            $delete_stmt = $pdo->prepare("DELETE FROM trash_schedule WHERE id=?");
+            $delete_stmt->execute([$id]);
 
-        // Now safe to delete
-        mysqli_query($conn, "DELETE FROM trash_schedule WHERE id=$id");
-
-        // LOG: record Delete action using the saved $old data
-        if ($history_exists) {
-            $log = "INSERT INTO schedule_history (action, zone, waste_type, days, time, acted_at)
-                    VALUES ('Deleted', '$oz', '$ot', '$od', '$oi', NOW())";
-            mysqli_query($conn, $log);
+            // LOG: record Delete action using the saved $old data
+            if ($history_exists) {
+                $log_stmt = $pdo->prepare("INSERT INTO schedule_history (action, zone, waste_type, days, time, acted_at)
+                        VALUES ('Deleted', ?, ?, ?, ?, NOW())");
+                $log_stmt->execute([$old['zone'], $old['waste_type'], $old['days'], $old['time']]);
+            }
         }
-    }
 
-    header("Location: admin_trashschedule.php?add=1&success=deleted");
-    exit();
+        header("Location: admin_trashschedule.php?add=1&success=deleted");
+        exit();
+    } catch (PDOException $e) {
+        $message = "Failed to delete: " . $e->getMessage();
+        $message_type = "error";
+    }
 }
 
 /* LOAD ROW FOR EDITING */
 if (isset($_GET['edit'])) {
-    $id       = (int)$_GET['edit'];
-    $res      = mysqli_query($conn, "SELECT * FROM trash_schedule WHERE id=$id");
-    $edit_row = mysqli_fetch_assoc($res);
+    $id = (int)$_GET['edit'];
+    $stmt = $pdo->prepare("SELECT * FROM trash_schedule WHERE id=?");
+    $stmt->execute([$id]);
+    $edit_row = $stmt->fetch();
 }
 
 /* SUCCESS MESSAGES */
@@ -113,7 +121,8 @@ if (isset($_GET['success'])) {
 }
 
 /* FETCH ALL SCHEDULES */
-$result = mysqli_query($conn, "SELECT * FROM trash_schedule ORDER BY zone, waste_type");
+$result = $pdo->query("SELECT * FROM trash_schedule ORDER BY zone, waste_type");
+$schedules = $result->fetchAll();
 
 /* FETCH HISTORY LOG + COUNT TOTALS */
 $history_rows  = [];
@@ -122,8 +131,8 @@ $count_updated = 0;
 $count_deleted = 0;
 
 if ($history_exists) {
-    $hres = mysqli_query($conn, "SELECT * FROM schedule_history ORDER BY acted_at DESC");
-    while ($h = mysqli_fetch_assoc($hres)) {
+    $hstmt = $pdo->query("SELECT * FROM schedule_history ORDER BY acted_at DESC");
+    while ($h = $hstmt->fetch()) {
         if ($h['action'] === 'Added')   $count_added++;
         if ($h['action'] === 'Updated') $count_updated++;
         if ($h['action'] === 'Deleted') $count_deleted++;
@@ -166,8 +175,6 @@ $guidelines = [
     <link rel="stylesheet" href="../css/admin_trashschedule.css">
 </head>
 <body>
-
-<?php include "../includes/admin_header.php"; ?>
 
 <div class="container">
 
@@ -282,7 +289,7 @@ $guidelines = [
         <?php endif; ?>
 
         <!-- EMPTY STATE -->
-        <?php if (mysqli_num_rows($result) === 0): ?>
+        <?php if (count($schedules) === 0): ?>
         <div class="empty-hint">
             <i class="fa-solid fa-trash-can" style="font-size:30px;opacity:0.3;margin-bottom:10px;"></i>
             <p>No schedules yet. Click <strong>+ Add Schedule</strong> to get started.</p>
@@ -290,7 +297,7 @@ $guidelines = [
         <?php endif; ?>
 
         <!-- SCHEDULE LIST -->
-        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+        <?php foreach ($schedules as $row): ?>
         <div class="schedule-item">
             <div class="schedule-header">
                 <!-- Zone name left, badge right — matches member view -->
@@ -320,7 +327,7 @@ $guidelines = [
                 Last updated: <?= date("M j, Y g:i A", strtotime($row['last_updated'])) ?>
             </div>
         </div>
-        <?php endwhile; ?>
+        <?php endforeach; ?>
     </section>
 
     <!-- COLLECTION HISTORY TRACKER -->
@@ -427,6 +434,6 @@ $guidelines = [
 
 </div>
 
-<?php include "../includes/member_footer.php"; ?>
+<?php include "../includes/footer.php"; ?>
 </body>
 </html>
