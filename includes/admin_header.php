@@ -18,7 +18,7 @@
             <a href="../admin/contact.php" class="nav-item"><i class="fa-solid fa-phone"></i> Contact</a>
         </div>
         <div class="user-actions">
-            <button class="btn-admin">Admin</button>
+            <button class="btn-admin"><i class="fa-solid fa-user-shield"></i> Admin</button>
             <button class="btn-logout" onclick="confirmLogout()">
                 <i class="fa-solid fa-right-from-bracket"></i> Logout
             </button>
