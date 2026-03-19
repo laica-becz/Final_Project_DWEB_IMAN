@@ -2,7 +2,8 @@
 // --- SETUP ---
 // We pull in the header (navigation) and the database connection file
 include "../includes/admin_header.php"; 
-include "../includes/db_conn.php"; 
+include "../includes/db_conn.php";
+require_once '../includes/auth_check.php';
 
 // --- 1. HANDLE POSTS (Saving New or Updated Data) ---
 // This triggers when the admin clicks the "Save" button in the form
