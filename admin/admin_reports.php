@@ -4,56 +4,68 @@ include "../includes/db_conn.php";
 
 //HANDLE ADMIN ANNOUNCEMENT (ADD NEW NOTICE BUTTON)
 if (isset($_POST['btn_save'])) {
-    $title = mysqli_real_escape_string($conn, $_POST['txt_title']);
-    $content = mysqli_real_escape_string($conn, $_POST['txt_content']);
+    $title = $_POST['txt_title'];
+    $content = $_POST['txt_content'];
     $name = "Administrator"; 
     $tag = "Announcement";
 
-    $sql = "INSERT INTO reports (report_name, report_title, report_tag, report_content, status) 
-            VALUES ('$name', '$title', '$tag', '$content', 'Resolved')";
-
-    if (mysqli_query($conn, $sql)) {
+    try {
+        $stmt = $pdo->prepare("INSERT INTO reports (report_name, report_title, report_tag, report_content, status) 
+                VALUES (?, ?, ?, ?, 'Resolved')");
+        $stmt->execute([$name, $title, $tag, $content]);
         header("Location: admin_reports.php"); 
         exit();
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
     }
 }
 
 //HANDLE RESPOND TO REPORT & EDIT ANNOUNCEMENT LOGIC
 if (isset($_POST['btn_send_response'])) {
-    $report_id = mysqli_real_escape_string($conn, $_POST['report_id']);
-    $admin_note = mysqli_real_escape_string($conn, $_POST['txt_admin_response']);
+    $report_id = $_POST['report_id'];
+    $admin_note = $_POST['txt_admin_response'];
     
-    // Only update status if it's NOT an announcement
-    $status_update = "";
-    if (isset($_POST['txt_status'])) {
-        $new_status = mysqli_real_escape_string($conn, $_POST['txt_status']);
-        $status_update = ", status = '$new_status'";
-    }
-
     $current_date = date("Y-m-d H:i:s");
-    $sql = "UPDATE reports SET 
-            admin_note = '$admin_note', 
-            admin_resolved = '$current_date'
-            $status_update 
-            WHERE report_id = '$report_id'";
-
-    if (mysqli_query($conn, $sql)) {
+    
+    try {
+        // Only update status if it's NOT an announcement
+        if (isset($_POST['txt_status'])) {
+            $new_status = $_POST['txt_status'];
+            $stmt = $pdo->prepare("UPDATE reports SET 
+                    admin_note = ?, 
+                    admin_resolved = ?,
+                    status = ?
+                    WHERE report_id = ?");
+            $stmt->execute([$admin_note, $current_date, $new_status, $report_id]);
+        } else {
+            $stmt = $pdo->prepare("UPDATE reports SET 
+                    admin_note = ?, 
+                    admin_resolved = ?
+                    WHERE report_id = ?");
+            $stmt->execute([$admin_note, $current_date, $report_id]);
+        }
+        
         header("Location: admin_reports.php");
         exit();
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
     }
 }
 
 // HANDLE DELETE
 if (isset($_GET['delete_id'])) {
-    $id = mysqli_real_escape_string($conn, $_GET['delete_id']);
-    $sql = "DELETE FROM reports WHERE report_id = '$id'";
-    if (mysqli_query($conn, $sql)) {
+    $id = $_GET['delete_id'];
+    
+    try {
+        $stmt = $pdo->prepare("DELETE FROM reports WHERE report_id = ?");
+        $stmt->execute([$id]);
         header("Location: admin_reports.php");
         exit();
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -61,6 +73,7 @@ if (isset($_GET['delete_id'])) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>(ADMIN) Reports & Concerns</title>
         <link rel="stylesheet" href="../css/member_reports.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     </head>
     <body>
         <div class="content-wrapper"> 
@@ -90,10 +103,9 @@ if (isset($_GET['delete_id'])) {
                 <!---REPORTS DISPLAYED--->
                 <main class="report-list">
                     <?php 
-                        $query = "SELECT * FROM reports ORDER BY report_submitted DESC";
-                        $result = mysqli_query($conn, $query);
+                        $stmt = $pdo->query("SELECT * FROM reports ORDER BY report_submitted DESC");
                         
-                        while($report = mysqli_fetch_assoc($result)) {
+                        while($report = $stmt->fetch()) {
                             $isAnnouncement = ($report['report_tag'] == 'Announcement');
                     ?>
                     <!---REPORT CARDS STRUCTURE--->
@@ -174,6 +186,4 @@ if (isset($_GET['delete_id'])) {
         </div>
     </body>
 </html>
-<?php 
-include "../includes/member_footer.php"; 
-?>
+<?php include "../includes/footer.php"; ?>
