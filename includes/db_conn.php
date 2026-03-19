@@ -1,13 +1,17 @@
 <?php
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "community_portal";
+$host = "localhost";
+$dbname = "community_portal";
+$port = "3306";
+$charset = "utf8mb4";
 
-    $conn = mysqli_connect($servername, $username, $password, $dbname);
+$username = "root";
+$password = "";
 
-    if (!$conn) 
-    {
-        die("Connection failed: " . mysqli_connect_error());
-    }
+try {
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=$charset", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+} catch(PDOException $e) {
+    die("Connection failed: " . $e->getMessage());
+}
 ?>
