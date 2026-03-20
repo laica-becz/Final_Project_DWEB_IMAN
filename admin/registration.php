@@ -14,7 +14,7 @@ $error = '';
 
 // Check if admin is already logged in
 if (isset($_SESSION['admin_id'])) {
-    header('Location: /FinalProject/admin/admin_home.php');
+    header('Location: /admin/admin_home.php');
     exit;
 }
 
