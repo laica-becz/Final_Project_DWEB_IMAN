@@ -9,11 +9,6 @@ session_set_cookie_params([
 session_start();
 session_unset();
 session_destroy();
-header('Location: /FinalProject/index.php');
-exit();
-?><?php
-session_start();
-session_destroy();
-header("Location: ../index.php");
+header('Location: /index.php');
 exit();
 ?>
