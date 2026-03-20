@@ -1,6 +1,5 @@
 <?php 
 require_once '../includes/auth_check.php';
-include "../includes/admin_header.php"; 
 include "../includes/db_conn.php";
 
 // ADD ANNOUNCEMENT 
@@ -14,7 +13,7 @@ if (isset($_POST['btn_save'])) {
         $stmt = $pdo->prepare("INSERT INTO reports (report_name, report_title, report_tag, report_content, status) 
                                VALUES (?, ?, ?, ?, 'Resolved')");
         $stmt->execute([$name, $title, $tag, $content]);
-        header("Location: admin_reports.php");
+        header("Location: /admin/admin_reports.php");
         exit();
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
@@ -43,7 +42,7 @@ if (isset($_POST['btn_send_response'])) {
                                    WHERE report_id = ?");
             $stmt->execute([$admin_note, $current_date, $report_id]);
         }
-        header("Location: admin_reports.php");
+        header("Location: /admin/admin_reports.php");
         exit();
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
@@ -56,12 +55,14 @@ if (isset($_GET['delete_id'])) {
     try {
         $stmt = $pdo->prepare("DELETE FROM reports WHERE report_id = ?");
         $stmt->execute([$id]);
-        header("Location: admin_reports.php");
+        header("Location: /admin/admin_reports.php");
         exit();
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
     }
 }
+
+include "../includes/admin_header.php"; 
 ?>
 
 <!DOCTYPE html>
@@ -79,7 +80,7 @@ if (isset($_GET['delete_id'])) {
 
                 <div class="page-header">
                     <div class="header-content">
-                        <h1>Admin - Reports & Concerns</h1> 
+                        <h1>Reports & Concerns</h1> 
                         <p class="subtitle">Monitor concerns and post announcements</p>
                     </div>
 
@@ -178,4 +179,5 @@ if (isset($_GET['delete_id'])) {
         </div>
     </body>
 </html>
+
 <?php include "../includes/footer.php"; ?>
