@@ -1,6 +1,5 @@
 <?php
 require_once '../includes/auth_check.php';
-include "../includes/admin_header.php";
 include "../includes/db_conn.php";
 
 $message      = '';
@@ -31,7 +30,7 @@ if (isset($_POST['add'])) {
             $log_stmt->execute([$zone, $type, $days, $time]);
         }
         
-        header("Location: admin_trashschedule.php?add=1&success=added");
+        header("Location: /admin/admin_trashschedule.php");
         exit();
     } catch (PDOException $e) {
         $message = "Failed to add: " . $e->getMessage();
@@ -61,7 +60,7 @@ if (isset($_POST['update'])) {
             $log_stmt->execute([$zone, $type, $days, $time]);
         }
         
-        header("Location: admin_trashschedule.php?add=1&success=updated");
+        header("Location: /admin/admin_trashschedule.php");
         exit();
     } catch (PDOException $e) {
         $message = "Failed to update: " . $e->getMessage();
@@ -92,7 +91,7 @@ if (isset($_GET['delete'])) {
             }
         }
 
-        header("Location: admin_trashschedule.php?add=1&success=deleted");
+        header("Location: /admin/admin_trashschedule.php");
         exit();
     } catch (PDOException $e) {
         $message = "Failed to delete: " . $e->getMessage();
@@ -163,6 +162,8 @@ $guidelines = [
         'items' => ['Clean plastic bottles','Cardboard and paper','Metal cans (aluminum, tin)','Glass bottles and jars','Clean packaging materials']
     ]
 ];
+
+include "../includes/admin_header.php";
 ?>
 <!DOCTYPE html>
 <html lang="en">
