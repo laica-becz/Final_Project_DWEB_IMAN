@@ -1,9 +1,7 @@
 <?php 
 // --- SETUP ---
 require_once '../includes/auth_check.php';
-include "../includes/admin_header.php"; 
 include "../includes/db_conn.php"; 
-
 
 // --- 1. HANDLE SAVE (New or Edit) ---
 if (isset($_POST['btn_save_announcement'])) {
@@ -23,7 +21,7 @@ if (isset($_POST['btn_save_announcement'])) {
             $stmt = $pdo->prepare("INSERT INTO announcements (title, content, priority, class, date) VALUES (?, ?, ?, ?, ?)");
             $stmt->execute([$title, $content, $priority, $class, $event_date]);
         }
-        header("Location: admin_home.php?mode=edit");
+        header("Location: /admin/admin_home.php");
         exit();
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
@@ -37,7 +35,7 @@ if (isset($_GET['soft_delete_id'])) {
     try {
         $stmt = $pdo->prepare("UPDATE announcements SET deleted_at = NOW() WHERE announ_id=?");
         $stmt->execute([$soft_delete_id]);
-        header("Location: admin_home.php?mode=edit");
+        header("Location: /admin/admin_home.php");
         exit();
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
@@ -51,7 +49,7 @@ if (isset($_GET['restore_id'])) {
     try {
         $stmt = $pdo->prepare("UPDATE announcements SET deleted_at = NULL WHERE announ_id=?");
         $stmt->execute([$restore_id]);
-        header("Location: admin_home.php?mode=edit");
+        header("Location: /admin/admin_home.php");
         exit();
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
@@ -65,7 +63,7 @@ if (isset($_GET['perm_delete_id'])) {
     try {
         $stmt = $pdo->prepare("DELETE FROM announcements WHERE announ_id=?");
         $stmt->execute([$perm_delete_id]);
-        header("Location: admin_home.php?mode=edit");
+        header("Location: /admin/admin_home.php");
         exit();
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
@@ -87,6 +85,9 @@ if (isset($_GET['edit_id'])) {
     $stmt->execute([$edit_id]);
     $edit_data = $stmt->fetch();
 }
+
+// ← MOVE HEADER INCLUDE TO HERE, after all handlers
+include "../includes/admin_header.php"; 
 ?>
 
 <!DOCTYPE html>
