@@ -26,7 +26,8 @@ CREATE TABLE announcements (
     content TEXT NOT NULL,
     priority VARCHAR(50) NOT NULL,
     class VARCHAR(20) NOT NULL,
-    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL
 );
 
 -- ----------------------------------
@@ -70,6 +71,43 @@ CREATE TABLE reports (
     admin_note TEXT NULL,
     admin_resolved TIMESTAMP NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 
+-- Dumping data for table 'announcements'
+--
+INSERT INTO announcements (title, content, priority, class, date, deleted_at) VALUES
+(
+    'Community Clean-Up Drive This Saturday',
+    'Join us for our monthly community clean-up drive this Saturday at 8:00 AM. Meeting point at the Community Center. Bring your own gloves and bags. Light refreshments will be provided.',
+    'High Priority',
+    'high',
+    '2026-01-28',
+    NULL
+),
+(
+    'New Trash Segregation Guidelines',
+    'Please note the updated trash segregation guidelines effective February 1st. Check the Trash Schedule page for detailed information on proper waste separation.',
+    'High Priority',
+    'high',
+    '2026-01-25',
+    NULL
+),
+(
+    'Community Center Renovation Update',
+    'The community center renovation is progressing well. We expect completion by mid-February. Thank you for your patience during this improvement project.',
+    'Normal',
+    'normal',
+    '2026-01-20',
+    NULL
+),
+(
+    'Street Lighting Maintenance Scheduled',
+    'Street lighting maintenance will be conducted in Zones A and B next week. Some areas may experience temporary outages during evening hours.',
+    'Normal',
+    'normal',
+    '2026-01-18',
+    NULL
+);
 
 --
 -- Dumping data for table `trash_schedule`
