@@ -1,7 +1,9 @@
 <?php 
 // --- SETUP ---
 require_once '../includes/auth_check.php';
-include "../includes/db_conn.php"; 
+include "../includes/db_conn.php";
+
+$admin_id = $_SESSION['admin_id']; // ← GET ADMIN ID ONCE AT THE TOP
 
 // --- 1. HANDLE SAVE (New or Edit) ---
 if (isset($_POST['btn_save_announcement'])) {
@@ -15,11 +17,12 @@ if (isset($_POST['btn_save_announcement'])) {
     try {
         if (isset($_POST['edit_id']) && !empty($_POST['edit_id'])) {
             $edit_id = $_POST['edit_id'];
-            $stmt = $pdo->prepare("UPDATE announcements SET title=?, content=?, priority=?, class=?, date=? WHERE announ_id=?");
-            $stmt->execute([$title, $content, $priority, $class, $event_date, $edit_id]);
+            $stmt = $pdo->prepare("UPDATE announcements SET title=?, content=?, priority=?, class=?, date=?, admin_id=? WHERE announ_id=?");
+            $stmt->execute([$title, $content, $priority, $class, $event_date, $admin_id, $edit_id]);
         } else {
-            $stmt = $pdo->prepare("INSERT INTO announcements (title, content, priority, class, date) VALUES (?, ?, ?, ?, ?)");
-            $stmt->execute([$title, $content, $priority, $class, $event_date]);
+            $stmt = $pdo->prepare("INSERT INTO announcements (title, content, priority, class, date, admin_id) 
+            VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$title, $content, $priority, $class, $event_date, $admin_id]);
         }
         header("Location: /admin/admin_home.php?mode=edit");
         exit();
@@ -81,7 +84,10 @@ $edit_data = null;
 
 if (isset($_GET['edit_id'])) {
     $edit_id = $_GET['edit_id'];
-    $stmt = $pdo->prepare("SELECT * FROM announcements WHERE announ_id=?");
+    $stmt = $pdo->prepare("SELECT announcements.*, admins.full_name 
+                           FROM announcements 
+                           LEFT JOIN admins ON announcements.admin_id = admins.admin_id
+                           WHERE announ_id=?");
     $stmt->execute([$edit_id]);
     $edit_data = $stmt->fetch();
 }
@@ -97,7 +103,6 @@ include "../includes/admin_header.php";
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../css/admin_home.css">
-
 </head>
 <body>
     <main class="container">
@@ -182,7 +187,12 @@ include "../includes/admin_header.php";
 
         <!-- ===== ACTIVE ANNOUNCEMENTS ===== -->
         <?php 
-        $stmt = $pdo->query("SELECT * FROM announcements WHERE deleted_at IS NULL ORDER BY date DESC");
+        // ← UPDATED QUERY - now JOINs with admins to get full_name
+        $stmt = $pdo->query("SELECT announcements.*, admins.full_name 
+                             FROM announcements 
+                             LEFT JOIN admins ON announcements.admin_id = admins.admin_id
+                             WHERE deleted_at IS NULL 
+                             ORDER BY date DESC");
         while ($item = $stmt->fetch()) { 
         ?>
             <div class="card">
@@ -212,6 +222,10 @@ include "../includes/admin_header.php";
                     <span class="material-symbols-outlined">calendar_month</span>
                     <?php echo date("F j, Y", strtotime($item['date'])); ?>
                 </div>
+                <!-- ← ADDED: Posted by -->
+                <div class="posted-by">
+                    Posted by: <?php echo htmlspecialchars($item['full_name'] ?? 'Unknown'); ?>
+                </div>
 
             </div>
         <?php } ?>
@@ -230,7 +244,12 @@ include "../includes/admin_header.php";
                 </div>
 
                 <?php 
-                $trash_stmt = $pdo->query("SELECT * FROM announcements WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC");
+                // ← UPDATED QUERY - also JOINs for deleted items
+                $trash_stmt = $pdo->query("SELECT announcements.*, admins.full_name 
+                                          FROM announcements 
+                                          LEFT JOIN admins ON announcements.admin_id = admins.admin_id
+                                          WHERE deleted_at IS NOT NULL 
+                                          ORDER BY deleted_at DESC");
                 $trash_items = $trash_stmt->fetchAll();
 
                 if (count($trash_items) === 0): ?>
@@ -252,6 +271,11 @@ include "../includes/admin_header.php";
                                     <div class="deleted-date">
                                         <span class="material-symbols-outlined">delete</span>
                                         Deleted on: <?php echo date("F j, Y g:i A", strtotime($trash_item['deleted_at'])); ?>
+                                    </div>
+                                    <!-- ← ADDED: Posted by in trash too -->
+                                    <div class="posted-by">
+                                        <span class="material-symbols-outlined">person</span>
+                                        Posted by: <?php echo htmlspecialchars($trash_item['full_name'] ?? 'Unknown'); ?>
                                     </div>
                                 </div>
 
