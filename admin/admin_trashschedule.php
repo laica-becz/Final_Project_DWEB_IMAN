@@ -6,6 +6,8 @@ $message      = '';
 $message_type = '';
 $edit_row     = null;
 
+$admin_id = $_SESSION['admin_id']; // ← GET ADMIN ID ONCE AT THE TOP
+
 /* Check if schedule_history table exists */
 $check_table    = $pdo->query("SHOW TABLES LIKE 'schedule_history'");
 $history_exists = ($check_table && $check_table->rowCount() > 0);
@@ -18,16 +20,14 @@ if (isset($_POST['add'])) {
     $type = $_POST['type'];
 
     try {
-        // Insert into main table (last_updated is handled automatically by MySQL)
-        $stmt = $pdo->prepare("INSERT INTO trash_schedule (zone, days, time, waste_type)
-                VALUES (?, ?, ?, ?)");
-        $stmt->execute([$zone, $days, $time, $type]);
+        $stmt = $pdo->prepare("INSERT INTO trash_schedule (zone, days, time, waste_type, admin_id)
+                VALUES (?, ?, ?, ?, ?)");
+        $stmt->execute([$zone, $days, $time, $type, $admin_id]);
 
-        // LOG: record Add action into history table
         if ($history_exists) {
-            $log_stmt = $pdo->prepare("INSERT INTO schedule_history (action, zone, waste_type, days, time, acted_at)
-                    VALUES ('Added', ?, ?, ?, ?, NOW())");
-            $log_stmt->execute([$zone, $type, $days, $time]);
+            $log_stmt = $pdo->prepare("INSERT INTO schedule_history (action, zone, waste_type, days, time, acted_at, admin_id)
+                    VALUES ('Added', ?, ?, ?, ?, NOW(), ?)");
+            $log_stmt->execute([$zone, $type, $days, $time, $admin_id]);
         }
         
         header("Location: /admin/admin_trashschedule.php");
@@ -47,17 +47,15 @@ if (isset($_POST['update'])) {
     $type = $_POST['type'];
 
     try {
-        // Update main table (last_updated auto-updates via ON UPDATE trigger)
         $stmt = $pdo->prepare("UPDATE trash_schedule
-                SET zone=?, days=?, time=?, waste_type=?
+                SET zone=?, days=?, time=?, waste_type=?, admin_id=?
                 WHERE id=?");
-        $stmt->execute([$zone, $days, $time, $type, $id]);
+        $stmt->execute([$zone, $days, $time, $type, $admin_id, $id]);
 
-        // LOG: record Update action into history table
         if ($history_exists) {
-            $log_stmt = $pdo->prepare("INSERT INTO schedule_history (action, zone, waste_type, days, time, acted_at)
-                    VALUES ('Updated', ?, ?, ?, ?, NOW())");
-            $log_stmt->execute([$zone, $type, $days, $time]);
+            $log_stmt = $pdo->prepare("INSERT INTO schedule_history (action, zone, waste_type, days, time, acted_at, admin_id)
+                    VALUES ('Updated', ?, ?, ?, ?, NOW(), ?)");
+            $log_stmt->execute([$zone, $type, $days, $time, $admin_id]);
         }
         
         header("Location: /admin/admin_trashschedule.php");
@@ -73,21 +71,18 @@ if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
 
     try {
-        // SELECT the row FIRST — data is gone after delete, so we save it
         $fetch_stmt = $pdo->prepare("SELECT * FROM trash_schedule WHERE id=?");
         $fetch_stmt->execute([$id]);
         $old = $fetch_stmt->fetch();
 
         if ($old) {
-            // Now safe to delete
             $delete_stmt = $pdo->prepare("DELETE FROM trash_schedule WHERE id=?");
             $delete_stmt->execute([$id]);
 
-            // LOG: record Delete action using the saved $old data
             if ($history_exists) {
-                $log_stmt = $pdo->prepare("INSERT INTO schedule_history (action, zone, waste_type, days, time, acted_at)
-                        VALUES ('Deleted', ?, ?, ?, ?, NOW())");
-                $log_stmt->execute([$old['zone'], $old['waste_type'], $old['days'], $old['time']]);
+                $log_stmt = $pdo->prepare("INSERT INTO schedule_history (action, zone, waste_type, days, time, acted_at, admin_id)
+                        VALUES ('Deleted', ?, ?, ?, ?, NOW(), ?)");
+                $log_stmt->execute([$old['zone'], $old['waste_type'], $old['days'], $old['time'], $admin_id]);
             }
         }
 
@@ -131,7 +126,10 @@ $count_updated = 0;
 $count_deleted = 0;
 
 if ($history_exists) {
-    $hstmt = $pdo->query("SELECT * FROM schedule_history ORDER BY acted_at DESC");
+    $hstmt = $pdo->query("SELECT schedule_history.*, admins.full_name 
+                           FROM schedule_history 
+                           LEFT JOIN admins ON schedule_history.admin_id = admins.admin_id
+                           ORDER BY acted_at DESC");
     while ($h = $hstmt->fetch()) {
         if ($h['action'] === 'Added')   $count_added++;
         if ($h['action'] === 'Updated') $count_updated++;
@@ -141,7 +139,7 @@ if ($history_exists) {
 }
 $total_changes = $count_added + $count_updated + $count_deleted;
 
-/* STATIC GUIDELINES (shared with member view) */
+/* STATIC GUIDELINES */
 $guidelines = [
     [
         'title' => 'Biodegradable',
@@ -197,7 +195,7 @@ include "../includes/admin_header.php";
         <?php endif; ?>
     </div>
 
-    <!-- Flash message (success or error) -->
+    <!-- Flash message -->
     <?php if ($message): ?>
     <div class="flash-alert <?= $message_type ?>">
         <i class="fa-solid <?= $message_type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation' ?>"></i>
@@ -302,7 +300,6 @@ include "../includes/admin_header.php";
         <?php foreach ($schedules as $row): ?>
         <div class="schedule-item">
             <div class="schedule-header">
-                <!-- Zone name left, badge right — matches member view -->
                 <div class="sched-left">
                     <strong><?= htmlspecialchars($row['zone']) ?></strong>
                     <span class="badge <?= $row['waste_type']==='Biodegradable' ? 'bio':'non-bio' ?>">
@@ -378,6 +375,7 @@ include "../includes/admin_header.php";
                         <th>Waste type</th>
                         <th>Day(s)</th>
                         <th>Time</th>
+                        <th>Done by</th>
                         <th>Date &amp; time</th>
                     </tr>
                 </thead>
@@ -393,6 +391,7 @@ include "../includes/admin_header.php";
                         <td><?= htmlspecialchars($h['waste_type']) ?></td>
                         <td><?= htmlspecialchars($h['days']) ?></td>
                         <td><?= htmlspecialchars($h['time']) ?></td>
+                        <td><?= htmlspecialchars($h['full_name'] ?? 'Unknown') ?></td>
                         <td class="history-date">
                             <?= date("M j, Y g:i A", strtotime($h['acted_at'])) ?>
                         </td>
@@ -405,7 +404,7 @@ include "../includes/admin_header.php";
         <?php endif; ?>
     </section>
 
-    <!-- GUIDELINES SECTION (same data as member view) -->
+    <!-- GUIDELINES SECTION -->
     <section class="card-section">
         <h2><i class="fa-solid fa-recycle"></i> Waste Segregation Guidelines</h2>
         <div class="guidelines-grid">
