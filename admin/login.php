@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
     
     if (empty($username) || empty($password)) {
-        header('Location: /FinalProject/index.php?error=empty');
+        header('Location: /index.php?error=empty');
         exit;
     }
     
@@ -33,21 +33,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['role']        = 'admin';
             $_SESSION['login_time']  = time();
 
-           header('Location: /FinalProject/admin/admin_home.php');
+           header('Location: /admin/admin_home.php');
            exit;
             
         } else {
-            header('Location: /FinalProject/index.php?error=invalid');
+            header('Location: /index.php?error=invalid');
             exit;
         }
         
     } catch (PDOException $e) {
-        header('Location: /FinalProject/index.php?error=database');
+        header('Location: /index.php?error=database');
         exit;
     }
     
 } else {
-    header('Location: /FinalProject/index.php');
+    header('Location: /index.php');
     exit;
 }
 ?>
