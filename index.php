@@ -8,7 +8,7 @@ session_set_cookie_params([
 ]);
 session_start();
 if (isset($_SESSION['admin_id'])){
-    header('Location: /FinalProject/admin/admin_home.php');
+    header('Location: /admin/admin_home.php');
     exit;
 }
 ?>
@@ -60,7 +60,7 @@ if (isset($_SESSION['admin_id'])){
                 <h2>Administrator Login</h2>
                 <p>Please enter your credentials</p>
             </div>
-            <form id="loginForm" action="/FinalProject/admin/login.php" method="POST">
+            <form id="loginForm" action="/admin/login.php" method="POST">
                 <div class="form-group">
                     <label for="username">Username</label>
                     <input type="text" id="username" name="username" required>
@@ -73,7 +73,7 @@ if (isset($_SESSION['admin_id'])){
             </form>
             <p style="text-align: center; margin-top: 15px; font-size: 0.9rem; color: #666;">
                 Don't have an account? 
-                <a href="/FinalProject/admin/registration.php" style="color: #5e35b1; font-weight: 600; text-decoration: none;">
+                <a href="/admin/registration.php" style="color: #5e35b1; font-weight: 600; text-decoration: none;">
                     Register here
                 </a>
             </p>
