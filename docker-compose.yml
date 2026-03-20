@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  # PHP + Apache Container
+  php-apache:
+    build: .
+    container_name: community_portal_app
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - db
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+
+  # MySQL Container
+  db:
+    image: mysql:8.0
+    container_name: community_portal_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: community_portal
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/mysql
+
+  # phpMyAdmin Container
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: community_portal_pma
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: ""
+
+volumes:
+  db_data:
