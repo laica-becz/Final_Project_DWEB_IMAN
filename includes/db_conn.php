@@ -1,5 +1,5 @@
 <?php
-$host = "localhost";
+$host = "db";
 $dbname = "community_portal";
 $port = "3306";
 $charset = "utf8mb4";
