@@ -1,17 +1,16 @@
 <?php 
-include "../includes/member_header.php";
 include "../includes/db_conn.php";
 
 if (isset($_POST['btn_save'])) 
 { 
-    $name = $_POST['txt_name'];
-    $title = $_POST['txt_title'];
-    $tag = $_POST['txt_tag'];
-    $content = $_POST['txt_content'];
+    $name    = trim($_POST['txt_name']);
+    $title   = trim($_POST['txt_title']);
+    $tag     = $_POST['txt_tag'];
+    $content = trim($_POST['txt_content']);
 
     try {
-        $stmt = $pdo->prepare("INSERT INTO reports (report_name, report_title, report_tag, report_content) 
-                VALUES (?, ?, ?, ?)");
+        $stmt = $pdo->prepare("INSERT INTO reports (report_name, report_title, report_tag, report_content, status) 
+                VALUES (?, ?, ?, ?, 'Pending')");  // ← ADD status here
         
         if ($stmt->execute([$name, $title, $tag, $content])) {
             header("Location: " . $_SERVER['PHP_SELF']); 
@@ -21,6 +20,7 @@ if (isset($_POST['btn_save']))
         echo "Error: " . $e->getMessage();
     }
 }
+include "../includes/member_header.php";
 ?>
 
 <!DOCTYPE html>
@@ -78,23 +78,23 @@ if (isset($_POST['btn_save']))
                         <article class="report-card">
                             <div class="badge-container">
                                 <?php if(!$isAnnouncement): ?>
-                                    <span class="badge status-pending"><?php echo $report['status']; ?></span>
+                                    <span class="badge status-pending"><?php echo htmlspecialchars($report['status'] ?? ''); ?></span>
                                 <?php endif; ?>
-                                <span class="badge tag"><?php echo $report['report_tag']; ?></span>
+                                <span class="badge tag"><?php echo htmlspecialchars($report['report_tag'] ?? ''); ?></span>
                             </div>
 
-                            <h2><?php echo htmlspecialchars($report['report_title']); ?></h2> 
+                            <h2><?php echo htmlspecialchars($report['report_title'] ?? ''); ?></h2>
 
-                            <p class="report-text"><?php echo htmlspecialchars($report['report_content']); ?></p>
+                            <p class="report-text"><?php echo htmlspecialchars($report['report_content'] ?? ''); ?></p>
 
                             <div class="author-meta">
-                                Submitted by <?php echo htmlspecialchars($report['report_name']); ?> on <?php echo date("F j, Y", strtotime($report['report_submitted'])); ?>
+                                Submitted by <?php echo htmlspecialchars($report['report_name'] ?? ''); ?> on <?php echo date("F j, Y", strtotime($report['report_submitted'] ?? '')); ?>
                             </div>
                             
                             <?php if(!empty($report['admin_note'])): ?>
                                 <section class="admin-reply">
                                     <h3><?php echo $isAnnouncement ? 'Additional Information' : 'Administrator Response'; ?></h3>
-                                    <p><?php echo htmlspecialchars($report['admin_note']); ?></p>
+                                    <p><?php echo htmlspecialchars($report['admin_note'] ?? ''); ?></p>
                                     <time class="reply-date">Updated on <?php echo date("F j, Y", strtotime($report['admin_resolved'])); ?></time>
                                 </section>
                             <?php elseif(!$isAnnouncement): ?>
