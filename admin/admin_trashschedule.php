@@ -6,7 +6,7 @@ $message      = '';
 $message_type = '';
 $edit_row     = null;
 
-$admin_id = $_SESSION['admin_id']; // ← GET ADMIN ID ONCE AT THE TOP
+$admin_id = $_SESSION['admin_id']; 
 
 /* Check if schedule_history table exists */
 $check_table    = $pdo->query("SHOW TABLES LIKE 'schedule_history'");
