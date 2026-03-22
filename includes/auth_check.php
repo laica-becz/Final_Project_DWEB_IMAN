@@ -18,16 +18,16 @@ if (
     // Wipe everything and kick out
     session_unset();
     session_destroy();
-    header('Location: /index.php?error=unauthorized');
+    header('Location: index.php?error=unauthorized');
     exit;
 }
 
-// Optional: auto-logout after 2 hours of inactivity
-$timeout = 2 * 60 * 60; // 2 hours
+// auto-logout after 2 hours of inactivity
+$timeout = 2 * 60 * 60; 
 if (isset($_SESSION['login_time']) && (time() - $_SESSION['login_time']) > $timeout) {
     session_unset();
     session_destroy();
-    header('Location: /index.php?error=timeout');
+    header('Location: index.php?error=timeout');
     exit;
 }
 
