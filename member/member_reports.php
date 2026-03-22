@@ -10,7 +10,7 @@ if (isset($_POST['btn_save']))
 
     try {
         $stmt = $pdo->prepare("INSERT INTO reports (report_name, report_title, report_tag, report_content, status) 
-                VALUES (?, ?, ?, ?, 'Pending')");  // ← ADD status here
+                VALUES (?, ?, ?, ?, 'Pending')"); 
         
         if ($stmt->execute([$name, $title, $tag, $content])) {
             header("Location: " . $_SERVER['PHP_SELF']); 
