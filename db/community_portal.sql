@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.3
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Mar 20, 2026 at 09:53 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: db
+-- Generation Time: Mar 22, 2026 at 12:39 PM
+-- Server version: 8.0.45
+-- PHP Version: 8.3.26
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,13 +28,22 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `admins` (
-  `admin_id` int(11) NOT NULL,
-  `username` varchar(50) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `full_name` varchar(100) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `admin_id` int NOT NULL,
+  `username` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `full_name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `role` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admins`
+--
+
+INSERT INTO `admins` (`admin_id`, `username`, `password`, `email`, `full_name`, `role`, `created_at`) VALUES
+(0, 'admin1', '$2y$10$8K1p/a0dR1xqM4MCi5nyrejAECXvzNRCGFHoJEAhOkkVQjkGGCXoS', 'admin1@barangay.gov', 'Administrator One', 'admin', '2026-03-22 12:37:39'),
+(0, 'admin2', '$2y$10$3O2qN5vZ4mX1pB8kYjdRweWz1LMqT5nK9hF6sJcPxDyGvIuQaELGy', 'admin2@barangay.gov', 'Administrator Two', 'admin', '2026-03-22 12:37:39');
 
 -- --------------------------------------------------------
 
@@ -43,14 +52,14 @@ CREATE TABLE `admins` (
 --
 
 CREATE TABLE `announcements` (
-  `announ_id` int(11) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `content` text NOT NULL,
-  `priority` varchar(50) NOT NULL,
-  `class` varchar(20) NOT NULL,
-  `date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `announ_id` int NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `content` text COLLATE utf8mb4_general_ci NOT NULL,
+  `priority` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `class` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
-  `admin_id` int(11) DEFAULT NULL
+  `admin_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -70,14 +79,14 @@ INSERT INTO `announcements` (`announ_id`, `title`, `content`, `priority`, `class
 --
 
 CREATE TABLE `reports` (
-  `report_id` int(11) NOT NULL,
-  `report_name` varchar(100) NOT NULL,
-  `report_title` varchar(200) NOT NULL,
-  `report_tag` varchar(50) NOT NULL,
-  `report_content` text NOT NULL,
-  `report_submitted` timestamp NOT NULL DEFAULT current_timestamp(),
-  `status` varchar(20) DEFAULT 'Pending',
-  `admin_note` text DEFAULT NULL,
+  `report_id` int NOT NULL,
+  `report_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `report_title` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `report_tag` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `report_content` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `report_submitted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT 'Pending',
+  `admin_note` text COLLATE utf8mb4_unicode_ci,
   `admin_resolved` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -97,14 +106,14 @@ INSERT INTO `reports` (`report_id`, `report_name`, `report_title`, `report_tag`,
 --
 
 CREATE TABLE `schedule_history` (
-  `id` int(11) NOT NULL,
-  `action` varchar(20) NOT NULL,
-  `zone` varchar(255) NOT NULL,
-  `waste_type` varchar(100) NOT NULL,
-  `days` varchar(255) NOT NULL,
-  `time` varchar(100) NOT NULL,
+  `id` int NOT NULL,
+  `action` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `zone` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `waste_type` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `days` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `time` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `acted_at` datetime NOT NULL,
-  `admin_id` int(11) DEFAULT NULL
+  `admin_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -114,13 +123,13 @@ CREATE TABLE `schedule_history` (
 --
 
 CREATE TABLE `trash_schedule` (
-  `id` int(11) NOT NULL,
-  `zone` varchar(100) NOT NULL,
-  `days` varchar(100) NOT NULL,
-  `time` varchar(100) NOT NULL,
-  `waste_type` varchar(50) NOT NULL,
-  `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `admin_id` int(11) DEFAULT NULL
+  `id` int NOT NULL,
+  `zone` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `days` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `time` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
+  `waste_type` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `last_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `admin_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -134,100 +143,6 @@ INSERT INTO `trash_schedule` (`id`, `zone`, `days`, `time`, `waste_type`, `last_
 (4, 'Zone B (South District)', 'Tuesday & Friday', '7:00 AM - 11:00 AM', 'Biodegradable', '2026-03-20 00:23:45', NULL),
 (5, 'Zone C (East District)', 'Wednesday & Saturday', '6:00 AM - 10:00 AM', 'Biodegradable', '2026-03-20 00:23:45', NULL),
 (6, 'Zone C (East District)', 'Wednesday & Saturday', '2:00 PM - 5:00 PM', 'Non-Biodegradable', '2026-03-20 00:23:45', NULL);
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `admins`
---
-ALTER TABLE `admins`
-  ADD PRIMARY KEY (`admin_id`),
-  ADD UNIQUE KEY `username` (`username`);
-
---
--- Indexes for table `announcements`
---
-ALTER TABLE `announcements`
-  ADD PRIMARY KEY (`announ_id`),
-  ADD KEY `admin_id` (`admin_id`);
-
---
--- Indexes for table `reports`
---
-ALTER TABLE `reports`
-  ADD PRIMARY KEY (`report_id`);
-
---
--- Indexes for table `schedule_history`
---
-ALTER TABLE `schedule_history`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `admin_id` (`admin_id`);
-
---
--- Indexes for table `trash_schedule`
---
-ALTER TABLE `trash_schedule`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `admin_id` (`admin_id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `admins`
---
-ALTER TABLE `admins`
-  MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `announcements`
---
-ALTER TABLE `announcements`
-  MODIFY `announ_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT for table `reports`
---
-ALTER TABLE `reports`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `schedule_history`
---
-ALTER TABLE `schedule_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `trash_schedule`
---
-ALTER TABLE `trash_schedule`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `announcements`
---
-ALTER TABLE `announcements`
-  ADD CONSTRAINT `announcements_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `admins` (`admin_id`) ON DELETE SET NULL;
-
---
--- Constraints for table `schedule_history`
---
-ALTER TABLE `schedule_history`
-  ADD CONSTRAINT `schedule_history_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `admins` (`admin_id`) ON DELETE SET NULL;
-
---
--- Constraints for table `trash_schedule`
---
-ALTER TABLE `trash_schedule`
-  ADD CONSTRAINT `trash_schedule_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `admins` (`admin_id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
